@@ -5,6 +5,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    run: |
-      sudo apt-get update
-      sudo apt -y install gcc-arm-none-eabi make 
+    - run: sudo apt-get update
+    - run: sudo apt -y install gcc-arm-none-eabi make 
