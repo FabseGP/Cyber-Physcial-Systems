@@ -1,0 +1,10 @@
+name: build
+on: [push, pull_request]
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    run: |
+      sudo apt-get update
+      sudo apt -y install gcc-arm-none-eabi make 
