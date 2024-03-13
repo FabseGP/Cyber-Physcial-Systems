@@ -37,7 +37,7 @@ In no given order:
 
 
 # Contributing
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change. Make sure to read the [CODESTYLE.md](CODESTYLE.md) and follow said guidelines.
 
 # License
 [GPL](https://choosealicense.com/licenses/gpl-3.0/)
