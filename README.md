@@ -27,6 +27,7 @@ Yet to come...
 
 ## Steps
 1. Clone/download the repository
+2. Read [SETUP.md](SETUP.md)
 2. Figure it out yourself
 
 # TODO
