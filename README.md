@@ -19,7 +19,11 @@ Yet to come...
 # Building
 
 ## Prerequisites
-* [Code Composer Studio]([https://nodejs.org](https://www.ti.com/tool/CCSTUDIO))
+* [ESP32 toolchain](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/get-started/)
+  * [Using VSCode](https://github.com/espressif/vscode-esp-idf-extension/blob/master/docs/tutorial/install.md)
+    * [Maybe consider PlatformIO for fully integrated setup, incl. debugging](https://platformio.org/)
+  * [Using commandline in Windows](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/get-started/windows-setup.html)
+  * [Using terminal in Linux](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/get-started/linux-macos-setup.html)
 
 ## Steps
 1. Clone/download the repository
