@@ -32,12 +32,14 @@
 //
 //***************************************************************
 
-#define GPIO_OUT_W1TS_REG_R       (*((volatile uint32_t *)GPIO_OUT_W1TS_REG))
-#define GPIO_OUT_W1TC_REG_R       (*((volatile uint32_t *)GPIO_OUT_W1TC_REG)) 
+#define GPIO_OUT_W1TS_REG_R         (*((volatile uint32_t *)GPIO_OUT_W1TS_REG))
+#define GPIO_OUT_W1TC_REG_R         (*((volatile uint32_t *)GPIO_OUT_W1TC_REG)) 
 
-#define GPIO_ENABLE_REG_R         (*((volatile uint32_t *)GPIO_ENABLE_REG)) 
-#define GPIO_ENABLE_W1TS_REG_R    (*((volatile uint32_t *)GPIO_ENABLE_W1TS_REG)) 
-#define GPIO_ENABLE_W1TC_REG_R    (*((volatile uint32_t *)GPIO_ENABLE_W1TC_REG)) 
+#define GPIO_IN_REG_R               (*((volatile uint32_t *)GPIO_IN_REG)) 
+
+#define GPIO_ENABLE_REG_R           (*((volatile uint32_t *)GPIO_ENABLE_REG)) 
+#define GPIO_ENABLE_W1TS_REG_R      (*((volatile uint32_t *)GPIO_ENABLE_W1TS_REG)) 
+#define GPIO_ENABLE_W1TC_REG_R      (*((volatile uint32_t *)GPIO_ENABLE_W1TC_REG)) 
 
 /***************** End of module **************/
 
