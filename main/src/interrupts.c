@@ -2,22 +2,19 @@
  * Univeristy of Southern Denmark
  * Project in Cyber Physical Systems (CPS)
  *
- * MODULENAME: main.c
+ * MODULENAME: interrupts.c
  * PROJECT: Trafic light
- * DESCRIPTION: Main file
+ * DESCRIPTION: See module specification file (.h-file)
  * Change log:
  **********************************************
  * Date of Change
  * 240219 - DDMMYY
  * ----------------
- * 170324 Module created
+ * 180223 Module created
  *
  ***********************************************/
 
 /***************** Include files **************/
-
-#include "include/registers.h"
-#include <stdint.h>
 
 /***************** Defines ********************/
 
@@ -27,6 +24,10 @@
 
 /***************** Functions ******************/
 
-void app_main() {}
+void init_interrupt() {
+  /*****************************************************************************
+   *   Function : See module specification (.h-file)
+   *****************************************************************************/
+}
 
 /***************** End of module **************/

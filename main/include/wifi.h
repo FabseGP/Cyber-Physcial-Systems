@@ -2,23 +2,23 @@
  * University of Southern Denmark
  * Project in Cyber Physical Systems (CPS)
  *
- * MODULENAME.: template.h (CHANGE ME)
+ * MODULENAME.: wifi.h
  *
  * PROJECT....: Traffic light
  *
- * DESCRIPTION: Template for header files (CHANGE ME)
+ * DESCRIPTION: Setting up builtin WiFi as station mode
  *
  * Change Log:
  ******************************************************************************
  * Date    Id    Change
  * DDMMYY
  * --------------------
- * 150324  MoH    Module created (CHANGE ME)
+ * 180324  MoH    Module created
  *
  *****************************************************************************/
 
-#ifndef _TEMPLATE_H_ // CHANGE ME
-#define _TEMPLATE_H_ // CHANGE ME
+#ifndef _WIFI_H_
+#define _WIFI_H_
 
 /***************************** Include files *******************************/
 
@@ -30,18 +30,11 @@
 
 /*****************************   Functions   *******************************/
 
-void temp_function(); // CHANGE ME
+void init_wifi();
 /*****************************************************************************
  *   Input    : -
  *   Output   : -
- *   Function : Temporary function (CHANGE ME)
- ******************************************************************************/
-
-void temp_function_with_input(int temp); // CHANGE ME
-/*****************************************************************************
- *   Input    : -
- *   Output   : -
- *   Function : Temporary function with input (CHANGE ME)
+ *   Function : Initialize WiFi
  ******************************************************************************/
 
 /***************** End of module **************/

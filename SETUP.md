@@ -18,6 +18,8 @@ A rudimentary step-by-step guide to run the included "blink"-project within the 
     * Generic guide: https://helpdeskgeek.com/how-to/how-to-manually-install-a-driver-in-windows-11-10/
 * [Git for Windows](https://gitforwindows.org/)
   * Not strictly needed, but VSCode will prompt you for installing git manually from the site when you try to initialize a git-repo, if not installed
+* [clangd](https://marketplace.visualstudio.com/items?itemName=llvm-vs-code-extensions.vscode-clangd)
+  * Opinionated code formatting
 
 # Installing the toolchain
 
