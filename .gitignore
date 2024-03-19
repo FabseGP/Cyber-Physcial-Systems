@@ -62,5 +62,6 @@ dkms.conf
 =======
 =======
 /.devcontainer
+/.cache
 >>>>>>> ffaecf0b1deb6e4ded92b84066829b41475b1037
 >>>>>>> ec2a1ce8beda1f3ef0506d295f51aba41d659ee7
