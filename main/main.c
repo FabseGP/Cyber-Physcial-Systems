@@ -16,8 +16,7 @@
 
 /***************** Include files **************/
 
-#include "include/registers.h"
-#include <stdint.h>
+#include "include/systick.h"
 
 /***************** Defines ********************/
 
@@ -27,6 +26,9 @@
 
 /***************** Functions ******************/
 
-void app_main() {}
+void app_main() {
+  enable_clocks();
+  init_systick();
+}
 
 /***************** End of module **************/
