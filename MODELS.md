@@ -94,7 +94,7 @@ erDiagram
     TRAFFIC-LIGHT ||--o{ VEHICLE : allows
     TRAFFIC-LIGHT {
         int traffic-light_id PK
-        int state "Either stop, wait or go"
+        int char(25) "Either red, redyellow, yellow or green"
         char(25) direction "Either north, south, east or west"
         char(25) location
         queue_size int
