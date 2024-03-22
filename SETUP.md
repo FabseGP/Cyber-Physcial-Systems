@@ -19,7 +19,7 @@ A rudimentary step-by-step guide to run the included "blink"-project within the 
 * [Git for Windows](https://gitforwindows.org/)
   * Not strictly needed, but VSCode will prompt you for installing git manually from the site when you try to initialize a git-repo, if not installed
 * [clangd](https://marketplace.visualstudio.com/items?itemName=llvm-vs-code-extensions.vscode-clangd)
-  * Opinionated code formatting
+  * Opinionated code formatting, check [this comment](https://stackoverflow.com/a/62532674) on how to enable autoformat on save
 
 # Installing the toolchain
 
