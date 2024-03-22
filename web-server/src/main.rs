@@ -17,7 +17,7 @@ impl Api {
 #[tokio::main]
 async fn main() -> Result<(), std::io::Error> {
     let api_service =
-        OpenApiService::new(Api, "Hello World", "1.0").server("http://localhost:3000/api");
+        OpenApiService::new(Api, "Fabseapi", "1.0").server("http://localhost:3000/api");
     let ui = api_service.swagger_ui();
 
     Server::new(TcpListener::bind("0.0.0.0:3000"))
