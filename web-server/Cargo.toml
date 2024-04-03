@@ -4,13 +4,15 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-poem = { version = "2" }
-poem-openapi = { version = "4", features = ["swagger-ui"] }
-sqlx = { version = "0", features = ["mysql", "runtime-tokio", "tls-rustls"] }
-tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
+dotenvy = "0"
+poem = { version = "3" }
+poem-openapi = { version = "5", features = ["swagger-ui"] }
+sqlx = { version = "0", features = ["chrono", "mysql", "runtime-tokio", "time", "tls-rustls"] }
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+tokio-stream = { version = "0" }
 
 [profile.release]
-panic = "abort"
 codegen-units = 1
 lto = "thin"
+panic = "abort"
 strip = true

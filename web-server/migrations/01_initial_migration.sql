@@ -1,6 +1,6 @@
 -- Create schema and tables
 
-CREATE SCHEMA IF NOT EXISTS light_crossings;
+CREATE SCHEMA IF NOT EXISTS traffic_lights;
 
 CREATE TABLE IF NOT EXISTS incident (
 		date_id INTEGER NOT NULL,
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS traffic_light (
 		PRIMARY KEY (traffic_light_id)
 );
 
-CREATE TABLE cars (
+CREATE TABLE IF NOT EXISTS cars (
 		car_id INTEGER NOT NULL,
 		velocity INTEGER NOT NULL,
 		clock TIME NOT NULL,
