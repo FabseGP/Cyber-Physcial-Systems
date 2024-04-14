@@ -37,10 +37,6 @@ void wifi_setup(const String ssid, const String password) {
     Serial.print(".");
     delay(5);
   }
-
-  Serial.println("WiFi connected.");
-  Serial.println("IP address: ");
-  Serial.println(WiFi.localIP());
 }
 
 /***************** End of module **************/

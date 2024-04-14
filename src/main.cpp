@@ -17,6 +17,7 @@
 /***************** Include files **************/
 
 #include "cars.h"
+#include "traffic_lights.h"
 #include "wifi.h"
 #include <Arduino.h>
 #include <HTTPClient.h>
@@ -35,37 +36,49 @@ void setup() {
 }
 
 void loop() {
-  Cars car1;
-  car1.init(20, 30, 2, 1, 2);
+
   if (WiFi.status() == WL_CONNECTED) {
-    HTTPClient   http;
 
-    const String serverAddress = "http://192.168.0.200:3000/vehicles/insert";
+    HTTPClient http;
 
-    String       url           = serverAddress + "?car_id=" + car1.return_id() +
-                 "&velocity=" + car1.return_velocity() +
-                 "&date_id=" + car1.return_date() +
-                 "&car_type_id=" + car1.return_type() +
-                 "&traffic_light_id=" + car1.return_traffic_id();
+    Cars       car1;
+    car1.init(20, 30, 2, 1, 2);
 
-    http.begin(url);
+    const String server  = "http://192.168.0.200:3000";
 
-    int httpResponseCode = http.POST("");
+    const String car_url = server + "/vehicles/insert" +
+                           "?car_id=" + car1.return_id() +
+                           "&velocity=" + car1.return_velocity() +
+                           "&date_id=" + car1.return_date() +
+                           "&car_type_id=" + car1.return_type() +
+                           "&traffic_light_id=" + car1.return_traffic_id();
 
-    if (httpResponseCode > 0) {
-      Serial.print("HTTP Response code: ");
-      Serial.println(httpResponseCode);
-    } else {
-      Serial.println("Error in HTTP POST request");
-    }
+    http.begin(car_url);
+
+    http.POST("");
+
+    TrafficLights traffic_light1;
+    traffic_light1.init(30, "Green", "South", "Faaborgvej 23, 5610 Assens", 20);
+
+    const String traffic_light_url =
+        server + "/trafficlights/insert" +
+        "?traffic_light_id=" + traffic_light1.return_id() +
+        "&state=" + traffic_light1.return_state() +
+        "&direction=" + traffic_light1.return_direction() +
+        "&location=" + traffic_light1.return_location() +
+        "&queue_size=" + traffic_light1.return_queue_size();
+
+    http.begin(traffic_light_url);
+
+    http.POST("");
 
     http.end();
 
   } else {
-    Serial.println("get a better internet connection!");
+    Serial.println("Get a better internet connection!");
   }
 
-  delay(5000);
+  return;
 }
 
 /***************** End of module **************/

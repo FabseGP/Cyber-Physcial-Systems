@@ -17,6 +17,7 @@
 /***************** Include files **************/
 
 #include "traffic_lights.h"
+#include <Arduino.h>
 
 /***************** Defines ********************/
 
@@ -38,5 +39,15 @@ void TrafficLights::init(int id, String mode, String placement, String area,
   location         = area;
   queue_size       = queue;
 }
+
+int    TrafficLights::return_id() { return traffic_light_id; }
+
+String TrafficLights::return_state() { return state; }
+
+String TrafficLights::return_direction() { return direction; }
+
+String TrafficLights::return_location() { return location; }
+
+int    TrafficLights::return_queue_size() { return queue_size; }
 
 /***************** End of module **************/
