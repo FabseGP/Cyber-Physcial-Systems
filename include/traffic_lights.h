@@ -32,7 +32,12 @@ class TrafficLights {
     String state, direction, location;
 
   public:
-    void init(int id, String mode, String placement, String area, int queue);
+    void   init(int id, String mode, String placement, String area, int queue);
+    int    return_id();
+    String return_state();
+    String return_direction();
+    String return_location();
+    int    return_queue_size();
 };
 
 /***************** End of module **************/
