@@ -2,30 +2,32 @@
  * Univeristy of Southern Denmark
  * Project in Cyber Physical Systems (CPS)
  *
- * MODULENAME: traffic_lights.cpp
- * PROJECT: Trafic light
+ * MODULENAME.: traffic_lights.cpp
+ * PROJECT....: Trafic light
  * DESCRIPTION: See module specification file (.h-file)
- * Change log:
+ * Change log.:
  **********************************************
- * Date of Change
- * 240219 - DDMMYY
- * ----------------
- * 130424 Module created
+ * Date    Id    Change
+ * DDMMYY
+ * --------------------
+ * 130424  MoH    Module created
  *
- ***********************************************/
+ *****************************************************************************/
 
-/***************** Include files **************/
+/***************************** Include files *******************************/
 
 #include "traffic_lights.h"
 #include <Arduino.h>
 
-/***************** Defines ********************/
+/*****************************    Defines    *******************************/
 
-/***************** Constants ******************/
+/*****************************   Constants   *******************************/
 
-/***************** Variables ******************/
+/*****************************   Variables   *******************************/
 
-/***************** Functions ******************/
+/*****************************    Objects    *******************************/
+
+/*****************************   Functions   *******************************/
 
 void TrafficLights::init(int id, String mode, String placement, String area,
                          int queue) {
@@ -50,4 +52,4 @@ String TrafficLights::return_location() { return location; }
 
 int    TrafficLights::return_queue_size() { return queue_size; }
 
-/***************** End of module **************/
+/****************************** End Of Module *******************************/

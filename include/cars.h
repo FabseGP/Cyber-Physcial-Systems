@@ -1,14 +1,14 @@
 /*****************************************************************************
  * University of Southern Denmark
- * Project in Cyber Physical Systems (CPS)
+ * Project 4. semester
  *
  * MODULENAME.: cars.h
  *
- * PROJECT....: Traffic light
+ * PROJECT....: Cyber Physical Systems
  *
  * DESCRIPTION: Class for each car
  *
- * Change Log:
+ * Change Log.:
  ******************************************************************************
  * Date    Id    Change
  * DDMMYY
@@ -21,6 +21,12 @@
 #define CARS_H
 
 /***************************** Include files *******************************/
+
+/*****************************    Defines    *******************************/
+
+/*****************************   Constants   *******************************/
+
+/*****************************   Variables   *******************************/
 
 /*****************************    Objects    *******************************/
 
@@ -37,6 +43,8 @@ class Cars {
     int  return_traffic_id();
 };
 
-/***************** End of module **************/
+/*****************************   Functions   *******************************/
+
+/****************************** End Of Module *******************************/
 
 #endif
