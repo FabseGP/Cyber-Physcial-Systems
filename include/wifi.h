@@ -4,12 +4,11 @@
  *
  * MODULENAME.: wifi.h
  *
- * PROJECT....: Traffic light
+ * PROJECT....: Cyber Physical Systems
  *
- * DESCRIPTION: Initializing a WiFi-connection and communicate with the
- *API-server
+ * DESCRIPTION: Initializing a WiFi-connection with communication
  *
- * Change Log:
+ * Change Log.:
  ******************************************************************************
  * Date    Id    Change
  * DDMMYY
@@ -25,7 +24,15 @@
 
 #include <Arduino.h>
 
-/*****************************    Functions    *******************************/
+/*****************************    Defines    *******************************/
+
+/*****************************   Constants   *******************************/
+
+/*****************************   Variables   *******************************/
+
+/*****************************    Objects    *******************************/
+
+/*****************************   Functions   *******************************/
 
 void wifi_setup(String ssid, String password);
 /*****************************************************************************
@@ -34,6 +41,14 @@ void wifi_setup(String ssid, String password);
  *   Function : Initialize a WiFi-connection
  ******************************************************************************/
 
-/***************** End of module **************/
+void test_connection();
+/*****************************************************************************
+ *   Input    : -
+ *   Output   : -
+ *   Function : Tests connection to web-server by sending dummy data
+ ******************************************************************************/
+
+
+/****************************** End Of Module *******************************/
 
 #endif
