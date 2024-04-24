@@ -1,17 +1,44 @@
 # Table of Contents
 
-* [General task diagram](#general-task-diagram)
+* [General task diagram V1](#general-task-diagram-v1)
+* [General task diagram V2](#general-task-diagram-v2)
 * [Implementing hardware functions](#implementing-hardware-functions)
 * [Implementing software functions](#implementing-software-functions)
 * [SQL schema](#sql-schema) 
 
-# General task diagram
+# General task diagram V1
 
 ```mermaid
 flowchart TD
     A[Sensor] --> B[[Sensor-buffer]] --> C[Data-model]
     C --> D[Traffic-data] --> E((Datatransmission)) --> F[SQL-server]
     C --> G[Queue-data] --> H((Traffic-light algorithm)) --> I[Traffic-light mode]
+
+```
+
+# General task diagram V2
+
+```mermaid
+flowchart LR
+    A{PCNT0-interrupt} --> C[[Sensor1 buffer]]
+    B{PCNT1-interrupt} --> D[[Sensor2 buffer]]
+
+    C --> I((Velocity and position)) 
+    D --> I
+
+    I --> E[Car data]
+    I --> F[Queue size]
+
+    E --> H((Data-parsing))
+    F --> H
+
+    H --> G[[HTTP-buffer]] --> K((Wifi-transfer)) --> P[[SQL-data]] --> Q((Populating SQL-database))
+ 
+    E --> J((Traffic light algorithm))
+    F --> J
+
+    J --> L[Traffic light state] --> N((Traffic light switching)) 
+    J --> O[Traffic light timeout] --> M{Timer-interrupt} --> N
 
 ```
 

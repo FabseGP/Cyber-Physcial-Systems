@@ -1,0 +1,273 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Fabseapi",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000"
+    }
+  ],
+  "tags": [
+    {
+      "name": "TrafficLights"
+    },
+    {
+      "name": "Vehicles"
+    }
+  ],
+  "paths": {
+    "/vehicles/insert": {
+      "post": {
+        "tags": [
+          "Vehicles"
+        ],
+        "summary": "Inserts information about a passing car into the cars-table within the SQL-server",
+        "description": "# Example\n\n```\nvechicle_insert(\"1\", \"30\", \"2\", \"3\", \"5\")\n```",
+        "parameters": [
+          {
+            "name": "car_id",
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "required": false,
+            "deprecated": false,
+            "explode": true
+          },
+          {
+            "name": "velocity",
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "required": false,
+            "deprecated": false,
+            "explode": true
+          },
+          {
+            "name": "date_id",
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "required": false,
+            "deprecated": false,
+            "explode": true
+          },
+          {
+            "name": "car_type_id",
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "required": false,
+            "deprecated": false,
+            "explode": true
+          },
+          {
+            "name": "traffic_light_id",
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "required": false,
+            "deprecated": false,
+            "explode": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/vehicles/retrieve": {
+      "get": {
+        "tags": [
+          "Vehicles"
+        ],
+        "summary": "Retrieves all rows from the cars-table within the SQL-server",
+        "description": "# Example\n\n```\nlet cars = vechicle_retrieve();\nmatch cars {\nOk(json) => println!(\"{:?}\", json),\nErr(err) => eprintln!(\"Error: {:?}\", err),\n}\n```",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Car"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/trafficlights/insert": {
+      "post": {
+        "tags": [
+          "TrafficLights"
+        ],
+        "summary": "Inserts information about a traffic light into the traffic_light-table within the SQL-server",
+        "description": "# Example\n\n```\ntraffic_light_insert(\"1\", \"Green\", \"North\", \"Nyborgsvej 3, 5530 Odense\", \"2\")\n```",
+        "parameters": [
+          {
+            "name": "traffic_light_id",
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "required": false,
+            "deprecated": false,
+            "explode": true
+          },
+          {
+            "name": "state",
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "required": false,
+            "deprecated": false,
+            "explode": true
+          },
+          {
+            "name": "direction",
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "required": false,
+            "deprecated": false,
+            "explode": true
+          },
+          {
+            "name": "location",
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "required": false,
+            "deprecated": false,
+            "explode": true
+          },
+          {
+            "name": "queue_size",
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "required": false,
+            "deprecated": false,
+            "explode": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/trafficlights/retrieve": {
+      "get": {
+        "tags": [
+          "TrafficLights"
+        ],
+        "summary": "Retrieves all rows from the traffic_light-table within the SQL-server",
+        "description": "# Example\n\n```\nlet traffic_lights = traffic_light_retrieve();\nmatch traffic_lights {\nOk(json) => println!(\"{:?}\", json),\nErr(err) => eprintln!(\"Error: {:?}\", err),\n}\n```",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TrafficLight"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Car": {
+        "type": "object",
+        "description": "A car is being represented here",
+        "required": [
+          "car_id",
+          "velocity",
+          "clock",
+          "date_id",
+          "car_type_id",
+          "traffic_light_id"
+        ],
+        "properties": {
+          "car_id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "velocity": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "clock": {
+            "type": "string"
+          },
+          "date_id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "car_type_id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "traffic_light_id": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "TrafficLight": {
+        "type": "object",
+        "description": "A traffic light is being represented here",
+        "required": [
+          "traffic_light_id",
+          "state",
+          "direction",
+          "location",
+          "queue_size"
+        ],
+        "properties": {
+          "traffic_light_id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "state": {
+            "type": "string"
+          },
+          "direction": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "queue_size": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      }
+    }
+  }
+}

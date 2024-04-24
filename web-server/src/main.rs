@@ -84,13 +84,6 @@ impl Api {
         car_type_id: Query<Option<String>>,
         traffic_light_id: Query<Option<String>>,
     ) {
-        /*
-        if car_id.is_some()
-            && velocity.is_some()
-            && date_id.is_some()
-            && car_type_id.is_some()
-            && traffic_light_id.is_some()
-        {}*/
         sqlx::query!(
             "REPLACE INTO cars (car_id, velocity, clock, date_id, car_type_id, traffic_light_id) VALUES (?, ?, ?, ?, ?, ?)",
             car_id.as_ref(), velocity.as_ref(), chrono::Local::now(), date_id.as_ref(), car_type_id.as_ref(), traffic_light_id.as_ref()
@@ -197,7 +190,7 @@ impl Api {
 /// Initializes an async api at http://localhost:3000
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let api_service =
-        OpenApiService::new(Api::etablish_sql_connection().await, "Fabseapi", "1.0.0")
+        OpenApiService::new(Api::etablish_sql_connection().await, "TrafficAPI", "1.0.0")
             .server("http://localhost:3000");
     let ui = api_service.swagger_ui();
     let spec = api_service.spec();
