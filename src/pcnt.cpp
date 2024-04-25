@@ -24,8 +24,13 @@
 /*****************************    Defines    *******************************/
 
 #define PCNT_FREQ_UNIT  PCNT_UNIT_0
-#define PCNT_H_LIM_VAL  10000
-#define PCNT_FILTER_VAL 10000
+#define PCNT_H_LIM_VAL  3780
+#define PCNT_FILTER_VAL 1000
+#define RESET           0
+#define OVERFLOW        0
+#define TASK_DELAY      100
+#define NO_CAR          1
+#define CAR             2
 
 /*****************************   Constants   *******************************/
 
@@ -33,8 +38,8 @@ pcnt_isr_handle_t user_isr_handle = NULL;
 
 /*****************************   Variables   *******************************/
 
-int16_t pulse_counter    = 0;
-int     overflow_counter = 0;
+int16_t pulse_counter    = RESET;
+int     overflow_counter = RESET;
 
 /*****************************    Objects    *******************************/
 
@@ -80,16 +85,6 @@ void initialize_pcnt(pcnt_unit_t pcnt_unit, pcnt_channel_t pcnt_channel,
   pinMode(input_pin, INPUT);
 }
 
-void read_reset_pcnt() {
-  /*****************************************************************************
-   *   Function : See module specification (.h-file)
-   *****************************************************************************/
-  pcnt_get_counter_value(PCNT_FREQ_UNIT, &pulse_counter);
-
-  overflow_counter = 0;
-  pcnt_counter_clear(PCNT_FREQ_UNIT);
-}
-
 void read_pcnt() {
   /*****************************************************************************
    *   Function : See module specification (.h-file)
@@ -107,43 +102,42 @@ void print_pcnt(void *pvParameters) {
     static int range = 1;
 
     switch (range) {
-      case 1:
+      case NO_CAR:
         pcnt_counter_pause(PCNT_UNIT_0); // pauser vores pcnt
         pcnt_counter_clear(
             PCNT_UNIT_0); // sletter den optalte værdi på vores pcnt
         pcnt_counter_resume(PCNT_UNIT_0); // starter vores pcnt
-        vTaskDelay(233 / portTICK_PERIOD_MS);
+        vTaskDelay(TASK_DELAY / portTICK_PERIOD_MS);
 
-        if (overflow_counter > 2) {
-          range            = 2;
-          overflow_counter = 0;
+        if (overflow_counter > OVERFLOW) {
+          range            = CAR;
+          overflow_counter = RESET;
         } // hvis den når den høje grænse skifter vi til case 2
         else {
-          Serial.println("ikke skiftet");
-          overflow_counter = 0;
+          Serial.println("Not changed");
+          overflow_counter = RESET;
         }
 
         break;
-      case 2:
+      case CAR:
         pcnt_counter_pause(PCNT_UNIT_0); // pauser vores pcnt
         pcnt_counter_clear(
             PCNT_UNIT_0); // sletter den optalte værdi på vores pcnt
         pcnt_counter_resume(PCNT_UNIT_0); // starter vores pcnt
-        vTaskDelay(233 / portTICK_PERIOD_MS);
-        if (overflow_counter > 2) {
-          range            = 2;
-          overflow_counter = 0;
+        vTaskDelay(TASK_DELAY / portTICK_PERIOD_MS);
+        if (overflow_counter > OVERFLOW) {
+          range            = CAR;
+          overflow_counter = RESET;
         } // hvis pcnt når den høje grænse bliver den i case 2 ellers går den
           // til case 1
         else {
-          range            = 1;
-          overflow_counter = 0;
+          range            = NO_CAR;
+          overflow_counter = RESET;
         }
         read_pcnt();
         Serial.print(pulse_counter);
         Serial.print("\t");
-        Serial.print(overflow_counter);
-        Serial.print("\n");
+        Serial.println(overflow_counter);
 
         break;
     }
@@ -155,14 +149,13 @@ void start_pcnt() {
    *   Function : See module specification (.h-file)
    *****************************************************************************/
 
-  xTaskCreatePinnedToCore( //
-      print_pcnt,          // function to be executed
-      "Print_PCNT",        // name of the task
-      2048,                // stack size
-      NULL,                // parameter passed to the function
-      1,                   // priority
-      NULL,                // task handle
-      0);                  // core where task should run
+  xTaskCreate(print_pcnt,   // function to be executed
+              "Print_PCNT", // name of the task
+              1024,         // stack size
+              NULL,         // parameter passed to the function
+              1,            // priority
+              NULL          // task handle
+  );
 }
 
 /****************************** End Of Module *******************************/
