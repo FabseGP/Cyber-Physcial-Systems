@@ -135,8 +135,8 @@ void traffic_cycle() {
       traffic_state = NS_READY;
       break;
   }
- // Serial.print("Current state: ");
- // Serial.println(traffic_state);
+  // Serial.print("Current state: ");
+  // Serial.println(traffic_state);
 }
 
 /****************************** End Of Module *******************************/
