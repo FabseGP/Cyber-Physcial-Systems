@@ -22,11 +22,14 @@
 
 /***************************** Include files *******************************/
 
-#include "Arduino.h"
+#include "driver/pcnt.h"
 
 /*****************************    Defines    *******************************/
 
-#define INPUT_PIN 15
+#define INPUT_PIN0 15
+#define INPUT_PIN1 16
+#define INPUT_PIN2 17
+#define INPUT_PIN3 18
 
 /*****************************   Constants   *******************************/
 
@@ -49,6 +52,15 @@ void setup_pcnt();
  *   Output   : -
  *   Function : CHANGE ME
  ******************************************************************************/
+
+void initialize_pcnt(pcnt_unit_t pcnt_unit, pcnt_channel_t pcnt_channel,
+                     int input_pin);
+/*****************************************************************************
+ *   Input    : PCNT-unit, PCNT-channel & input-pin
+ *   Output   : -
+ *   Function : CHANGE ME
+ ********************#include "driver/pcnt.h"
+ **********************************************************/
 
 void read_reset_pcnt();
 /*****************************************************************************

@@ -23,7 +23,7 @@
 
 /*****************************    Defines    *******************************/
 
-#define PCNT_FREQ_UNIT  PCNT_UNIT_3
+#define PCNT_FREQ_UNIT  PCNT_UNIT_0
 #define PCNT_H_LIM_VAL  10000
 #define PCNT_FILTER_VAL 10000
 
@@ -33,8 +33,8 @@ pcnt_isr_handle_t user_isr_handle = NULL;
 
 /*****************************   Variables   *******************************/
 
-int16_t PulseCounter    = 0;
-int     OverflowCounter = 0;
+int16_t pulse_counter    = 0;
+int     overflow_counter = 0;
 
 /*****************************    Objects    *******************************/
 
@@ -44,7 +44,7 @@ void IRAM_ATTR counter_overflow(void *arg) {
   /*****************************************************************************
    *   Function : See module specification (.h-file)
    *****************************************************************************/
-  OverflowCounter++;
+  overflow_counter++;
   PCNT.int_clr.val = BIT(PCNT_FREQ_UNIT);
   pcnt_counter_clear(PCNT_FREQ_UNIT);
 }
@@ -53,29 +53,40 @@ void setup_pcnt() {
   /*****************************************************************************
    *   Function : See module specification (.h-file)
    *****************************************************************************/
+
+  initialize_pcnt(PCNT_UNIT_0, PCNT_CHANNEL_0, INPUT_PIN0);
+  initialize_pcnt(PCNT_UNIT_1, PCNT_CHANNEL_0, INPUT_PIN1);
+  initialize_pcnt(PCNT_UNIT_2, PCNT_CHANNEL_0, INPUT_PIN2);
+  initialize_pcnt(PCNT_UNIT_3, PCNT_CHANNEL_0, INPUT_PIN3);
+};
+
+void initialize_pcnt(pcnt_unit_t pcnt_unit, pcnt_channel_t pcnt_channel,
+                     int input_pin) {
   pcnt_config_t pcntFreqConfig;
-  pcntFreqConfig.pulse_gpio_num = INPUT_PIN;
+  pcntFreqConfig.pulse_gpio_num = input_pin;
   pcntFreqConfig.pos_mode       = PCNT_COUNT_INC;
   pcntFreqConfig.counter_h_lim  = PCNT_H_LIM_VAL;
-  pcntFreqConfig.unit           = PCNT_FREQ_UNIT;
-  pcntFreqConfig.channel        = PCNT_CHANNEL_0;
+  pcntFreqConfig.unit           = pcnt_unit;
+  pcntFreqConfig.channel        = pcnt_channel;
 
   pcnt_unit_config(&pcntFreqConfig);
-  pcnt_event_enable(PCNT_FREQ_UNIT, PCNT_EVT_H_LIM);
-  pcnt_intr_enable(PCNT_FREQ_UNIT);
+  pcnt_event_enable(pcnt_unit, PCNT_EVT_H_LIM);
+  pcnt_intr_enable(pcnt_unit);
   pcnt_isr_register(counter_overflow, NULL, 0, &user_isr_handle);
-  pcnt_set_filter_value(PCNT_FREQ_UNIT, PCNT_FILTER_VAL);
-  pcnt_filter_enable(PCNT_FREQ_UNIT);
-  pcnt_counter_resume(PCNT_FREQ_UNIT);
-};
+  pcnt_set_filter_value(pcnt_unit, PCNT_FILTER_VAL);
+  pcnt_filter_enable(pcnt_unit);
+  pcnt_counter_resume(pcnt_unit);
+
+  pinMode(input_pin, INPUT);
+}
 
 void read_reset_pcnt() {
   /*****************************************************************************
    *   Function : See module specification (.h-file)
    *****************************************************************************/
-  pcnt_get_counter_value(PCNT_FREQ_UNIT, &PulseCounter);
+  pcnt_get_counter_value(PCNT_FREQ_UNIT, &pulse_counter);
 
-  OverflowCounter = 0;
+  overflow_counter = 0;
   pcnt_counter_clear(PCNT_FREQ_UNIT);
 }
 
@@ -83,7 +94,7 @@ void read_pcnt() {
   /*****************************************************************************
    *   Function : See module specification (.h-file)
    *****************************************************************************/
-  pcnt_get_counter_value(PCNT_FREQ_UNIT, &PulseCounter);
+  pcnt_get_counter_value(PCNT_FREQ_UNIT, &pulse_counter);
 }
 
 void print_pcnt(void *pvParameters) {
@@ -103,13 +114,13 @@ void print_pcnt(void *pvParameters) {
         pcnt_counter_resume(PCNT_UNIT_0); // starter vores pcnt
         vTaskDelay(233 / portTICK_PERIOD_MS);
 
-        if (OverflowCounter > 2) {
-          range           = 2;
-          OverflowCounter = 0;
+        if (overflow_counter > 2) {
+          range            = 2;
+          overflow_counter = 0;
         } // hvis den når den høje grænse skifter vi til case 2
         else {
           Serial.println("ikke skiftet");
-          OverflowCounter = 0;
+          overflow_counter = 0;
         }
 
         break;
@@ -119,19 +130,19 @@ void print_pcnt(void *pvParameters) {
             PCNT_UNIT_0); // sletter den optalte værdi på vores pcnt
         pcnt_counter_resume(PCNT_UNIT_0); // starter vores pcnt
         vTaskDelay(233 / portTICK_PERIOD_MS);
-        if (OverflowCounter > 2) {
-          range           = 2;
-          OverflowCounter = 0;
+        if (overflow_counter > 2) {
+          range            = 2;
+          overflow_counter = 0;
         } // hvis pcnt når den høje grænse bliver den i case 2 ellers går den
           // til case 1
         else {
-          range           = 1;
-          OverflowCounter = 0;
+          range            = 1;
+          overflow_counter = 0;
         }
         read_pcnt();
-        Serial.print(PulseCounter);
+        Serial.print(pulse_counter);
         Serial.print("\t");
-        Serial.print(OverflowCounter);
+        Serial.print(overflow_counter);
         Serial.print("\n");
 
         break;
@@ -152,7 +163,6 @@ void start_pcnt() {
       1,                   // priority
       NULL,                // task handle
       0);                  // core where task should run
-  pinMode(INPUT_PIN, INPUT);
 }
 
 /****************************** End Of Module *******************************/
