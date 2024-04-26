@@ -39,7 +39,6 @@ void setup_gpio() {
   pinMode(GPIO_NUM_4, OUTPUT);
   pinMode(GPIO_NUM_5, OUTPUT);
   pinMode(GPIO_NUM_6, OUTPUT);
-  Serial.println("GPIO has been set up");
 }
 
 /****************************** End Of Module *******************************/

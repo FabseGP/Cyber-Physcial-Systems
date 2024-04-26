@@ -34,16 +34,17 @@
 
 class TrafficLights {
   private:
-    int    traffic_light_id, queue_size;
-    String state, direction, location;
+    uint8_t traffic_light_id, queue_size;
+    String  state, direction, location;
 
   public:
-    void   init(int id, String mode, String placement, String area, int queue);
-    int    return_id();
-    String return_state();
-    String return_direction();
-    String return_location();
-    int    return_queue_size();
+    void    init(uint8_t id, String mode, String placement, String area,
+                 uint8_t queue);
+    uint8_t return_id();
+    String  return_state();
+    String  return_direction();
+    String  return_location();
+    uint8_t return_queue_size();
 };
 
 /*****************************   Functions   *******************************/

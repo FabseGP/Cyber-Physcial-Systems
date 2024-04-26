@@ -39,58 +39,68 @@ void wifi_setup(const String ssid, const String password) {
   WiFi.begin(ssid, password);
 
   while (WiFi.status() != WL_CONNECTED) {
-    Serial.print(".");
-    delay(5);
   }
-
-  Serial.println("Connected to WiFi");
 }
 
-void test_connection() {
+void test_connection(void *pvParameters) {
   /*****************************************************************************
    *   Function : See module specification (.h-file)
    *****************************************************************************/
 
-  if (WiFi.status() == WL_CONNECTED) {
+  while (1) {
+    if (WiFi.status() == WL_CONNECTED) {
 
-    HTTPClient http;
+      HTTPClient http;
 
-    Cars       car1;
-    car1.init(20, 30, 2, 1, 2);
+      Cars       car1;
+      car1.init(20, 30, 2, 1, 2);
 
-    const String server  = "http://192.168.0.200:3000";
+      const String server  = "http://192.168.0.200:3000";
 
-    const String car_url = server + "/vehicles/insert" +
-                           "?car_id=" + car1.return_id() +
-                           "&velocity=" + car1.return_velocity() +
-                           "&date_id=" + car1.return_date() +
-                           "&car_type_id=" + car1.return_type() +
-                           "&traffic_light_id=" + car1.return_traffic_id();
+      const String car_url = server + "/vehicles/insert" +
+                             "?car_id=" + car1.return_id() +
+                             "&velocity=" + car1.return_velocity() +
+                             "&date_id=" + car1.return_date() +
+                             "&car_type_id=" + car1.return_type() +
+                             "&traffic_light_id=" + car1.return_traffic_id();
 
-    http.begin(car_url);
+      http.begin(car_url);
 
-    http.POST("");
+      http.POST("");
 
-    TrafficLights traffic_light1;
-    traffic_light1.init(30, "Green", "South", "Faaborgvej 23, 5610 Assens", 20);
+      TrafficLights traffic_light1;
+      traffic_light1.init(30, "Green", "South", "Faaborgvej 23, 5610 Assens",
+                          20);
 
-    const String traffic_light_url =
-        server + "/trafficlights/insert" +
-        "?traffic_light_id=" + traffic_light1.return_id() +
-        "&state=" + traffic_light1.return_state() +
-        "&direction=" + traffic_light1.return_direction() +
-        "&location=" + traffic_light1.return_location() +
-        "&queue_size=" + traffic_light1.return_queue_size();
+      const String traffic_light_url =
+          server + "/trafficlights/insert" +
+          "?traffic_light_id=" + traffic_light1.return_id() +
+          "&state=" + traffic_light1.return_state() +
+          "&direction=" + traffic_light1.return_direction() +
+          "&location=" + traffic_light1.return_location() +
+          "&queue_size=" + traffic_light1.return_queue_size();
 
-    http.begin(traffic_light_url);
+      http.begin(traffic_light_url);
 
-    http.POST("");
+      http.POST("");
 
-    http.end();
-
-  } else {
-    Serial.println("Get a better internet connection!");
+      http.end();
+    }
   }
+}
+
+void start_wifi() {
+  /*****************************************************************************
+   *   Function : See module specification (.h-file)
+   *****************************************************************************/
+
+  xTaskCreate(test_connection, // function to be executed
+              "SQL_Queries",   // name of the task
+              2048,            // stack size
+              NULL,            // parameter passed to the function
+              2,               // priority
+              NULL             // task handle
+  );
 }
 
 /****************************** End Of Module *******************************/
