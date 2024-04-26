@@ -54,7 +54,7 @@ void setup_pcnt();
  ******************************************************************************/
 
 void initialize_pcnt(pcnt_unit_t pcnt_unit, pcnt_channel_t pcnt_channel,
-                     int input_pin);
+                     uint8_t input_pin);
 /*****************************************************************************
  *   Input    : PCNT-unit, PCNT-channel & input-pin
  *   Output   : -

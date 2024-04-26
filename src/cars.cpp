@@ -17,6 +17,7 @@
 /***************************** Include files *******************************/
 
 #include "cars.h"
+#include "Arduino.h"
 
 /*****************************    Defines    *******************************/
 
@@ -28,7 +29,8 @@
 
 /*****************************   Functions   *******************************/
 
-void Cars::init(int id, int speed, int date, int type, int traffic_light) {
+void Cars::init(uint8_t id, uint8_t speed, uint8_t date, uint8_t type,
+                uint8_t traffic_light) {
   /*****************************************************************************
    *   Function : See module specification (.h-file)
    *****************************************************************************/
@@ -40,14 +42,14 @@ void Cars::init(int id, int speed, int date, int type, int traffic_light) {
   traffic_light_id = traffic_light;
 }
 
-int Cars::return_id() { return car_id; }
+uint8_t Cars::return_id() { return car_id; }
 
-int Cars::return_velocity() { return velocity; }
+uint8_t Cars::return_velocity() { return velocity; }
 
-int Cars::return_date() { return date_id; }
+uint8_t Cars::return_date() { return date_id; }
 
-int Cars::return_type() { return car_type_id; }
+uint8_t Cars::return_type() { return car_type_id; }
 
-int Cars::return_traffic_id() { return traffic_light_id; }
+uint8_t Cars::return_traffic_id() { return traffic_light_id; }
 
 /****************************** End Of Module *******************************/

@@ -40,7 +40,7 @@ void traffic_cycle() {
   /*****************************************************************************
    *   Function : See module specification (.h-file)
    *****************************************************************************/
-  static int traffic_state = NS_READY;
+  static uint8_t traffic_state = NS_READY;
 
   switch (traffic_state) {
     case TL_IDLE:

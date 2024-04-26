@@ -29,8 +29,8 @@
 
 /*****************************   Functions   *******************************/
 
-void TrafficLights::init(int id, String mode, String placement, String area,
-                         int queue) {
+void TrafficLights::init(uint8_t id, String mode, String placement, String area,
+                         uint8_t queue) {
   /*****************************************************************************
    *   Function : See module specification (.h-file)
    *****************************************************************************/
@@ -42,14 +42,14 @@ void TrafficLights::init(int id, String mode, String placement, String area,
   queue_size       = queue;
 }
 
-int    TrafficLights::return_id() { return traffic_light_id; }
+uint8_t TrafficLights::return_id() { return traffic_light_id; }
 
-String TrafficLights::return_state() { return state; }
+String  TrafficLights::return_state() { return state; }
 
-String TrafficLights::return_direction() { return direction; }
+String  TrafficLights::return_direction() { return direction; }
 
-String TrafficLights::return_location() { return location; }
+String  TrafficLights::return_location() { return location; }
 
-int    TrafficLights::return_queue_size() { return queue_size; }
+uint8_t TrafficLights::return_queue_size() { return queue_size; }
 
 /****************************** End Of Module *******************************/

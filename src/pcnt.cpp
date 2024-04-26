@@ -39,7 +39,7 @@ pcnt_isr_handle_t user_isr_handle = NULL;
 /*****************************   Variables   *******************************/
 
 int16_t pulse_counter    = RESET;
-int     overflow_counter = RESET;
+uint8_t overflow_counter = RESET;
 
 /*****************************    Objects    *******************************/
 
@@ -66,7 +66,7 @@ void setup_pcnt() {
 };
 
 void initialize_pcnt(pcnt_unit_t pcnt_unit, pcnt_channel_t pcnt_channel,
-                     int input_pin) {
+                     uint8_t input_pin) {
   pcnt_config_t pcntFreqConfig;
   pcntFreqConfig.pulse_gpio_num = input_pin;
   pcntFreqConfig.pos_mode       = PCNT_COUNT_INC;
@@ -99,7 +99,7 @@ void print_pcnt(void *pvParameters) {
 
   while (1) {
 
-    static int range = 1;
+    static uint8_t range = 1;
 
     switch (range) {
       case NO_CAR:

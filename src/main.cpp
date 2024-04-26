@@ -40,12 +40,11 @@ void setup() {
   setup_gpio();
   setup_timer0();
   setup_pcnt();
-  // wifi_setup("WIFI_SSID_CHANGE_ME", "WIFI_PASSWORD_CHANGE_ME");
+  wifi_setup("WIFI_SSID_CHANGE_ME", "WIFI_PASSWORD_CHANGE_ME");
+  start_pcnt();
+  start_wifi();
 }
 
-void loop() {
-  start_pcnt();
-  // test_connection();
-}
+void loop() {}
 
 /****************************** End Of Module *******************************/

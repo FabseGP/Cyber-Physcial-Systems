@@ -22,6 +22,8 @@
 
 /***************************** Include files *******************************/
 
+#include "Arduino.h"
+
 /*****************************    Defines    *******************************/
 
 /*****************************   Constants   *******************************/
@@ -32,15 +34,16 @@
 
 class Cars {
   private:
-    int car_id, velocity, date_id, car_type_id, traffic_light_id;
+    uint8_t car_id, velocity, date_id, car_type_id, traffic_light_id;
 
   public:
-    void init(int id, int speed, int date, int type, int traffic_light);
-    int  return_id();
-    int  return_velocity();
-    int  return_date();
-    int  return_type();
-    int  return_traffic_id();
+    void    init(uint8_t id, uint8_t speed, uint8_t date, uint8_t type,
+                 uint8_t traffic_light);
+    uint8_t return_id();
+    uint8_t return_velocity();
+    uint8_t return_date();
+    uint8_t return_type();
+    uint8_t return_traffic_id();
 };
 
 /*****************************   Functions   *******************************/

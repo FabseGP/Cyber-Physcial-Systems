@@ -64,7 +64,6 @@ void setup_timer0() {
                   true); // Fire Interrupt every 1m ticks, so 1s
 
   timerAlarmEnable(timer);
-  Serial.println("Timer has been set up");
 }
 
 /****************************** End Of Module *******************************/
