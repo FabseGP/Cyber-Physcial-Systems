@@ -92,8 +92,9 @@ void PCNT_module::init_pcnt() {
   pcnt_config.channel        = PCNT_CHANNEL_0;
   pcnt_unit_config(&pcnt_config);
 
+  // https://docs.espressif.com/projects/esp-idf/en/v4.2/esp32/api-reference/peripherals/pcnt.html#_CPPv420pcnt_isr_handler_add11pcnt_unit_tPFvPvEPv
   // pcnt_isr_register(&PCNT_module::static_counter_overflow, this, 0,
-  //                  &user_isr_handle);
+  // &user_isr_handle);
   pcnt_isr_service_install(0);
   pcnt_isr_handler_add(pcnt_unit, &PCNT_module::static_counter_overflow, this);
   pcnt_intr_enable(pcnt_unit);
