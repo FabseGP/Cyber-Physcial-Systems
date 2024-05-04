@@ -2,6 +2,7 @@
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "xaver.clang-format",
     "files.associations": {
-        "string": "cpp"
+        "string": "cpp",
+        "*.tcc": "cpp"
     }
 }

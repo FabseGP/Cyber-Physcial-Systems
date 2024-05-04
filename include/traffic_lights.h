@@ -34,20 +34,38 @@
 
 class TrafficLights {
   private:
-    uint8_t traffic_light_id, queue_size;
-    String  state, direction, location;
+    static uint8_t object_count;
+    uint8_t        traffic_light_id, queue_size = 0, timer = 0;
+    String         state, direction, location;
 
   public:
-    void    init(uint8_t id, String mode, String placement, String area,
-                 uint8_t queue);
-    uint8_t return_id();
-    String  return_state();
-    String  return_direction();
-    String  return_location();
-    uint8_t return_queue_size();
+    TrafficLights();
+    void           init(uint8_t id, String mode, String placement, String area,
+                        uint8_t queue);
+    uint8_t        get_id();
+    String         get_state();
+    String         get_direction();
+    String         get_location();
+    uint8_t        get_queue_size();
+    void           update_timer(uint8_t subtract);
+    uint8_t        get_timer();
+    void           mode_cycling();
+    void           set_timer(uint8_t seconds);
+    static uint8_t get_count();
+    String         get_parameters();
 };
 
+extern TrafficLights traffic_light0, traffic_light1, traffic_light2,
+    traffic_light3;
+
 /*****************************   Functions   *******************************/
+
+void setup_traffic_lights();
+/*****************************************************************************
+ *   Input    : -
+ *   Output   : -
+ *   Function : Initialize all traffic lights
+ ******************************************************************************/
 
 /****************************** End Of Module *******************************/
 

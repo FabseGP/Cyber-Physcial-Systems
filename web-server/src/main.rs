@@ -143,9 +143,11 @@ impl Api {
         location: Query<Option<String>>,
         queue_size: Query<Option<String>>,
     ) {
-        sqlx::query!(
+        sqlx::query!(/*
             "REPLACE INTO traffic_light (traffic_light_id, state, direction, location, queue_size) VALUES (?, ?, ?, ?, ?)",
-            traffic_light_id.as_ref(), state.as_ref(), direction.as_ref(), location.as_ref(), queue_size.as_ref()
+            traffic_light_id.as_ref(), state.as_ref(), direction.as_ref(), location.as_ref(), queue_size.as_ref() */
+            "UPDATE traffic_light SET state = ?, direction = ?, location = ?, queue_size = ? WHERE traffic_light_id = ?",
+            state.as_ref(), direction.as_ref(), location.as_ref(), queue_size.as_ref(), traffic_light_id.as_ref()         
         )
         .execute(&*self.db)
         .await

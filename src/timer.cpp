@@ -18,6 +18,7 @@
 
 #include "Arduino.h"
 #include "traffic_cycle.h"
+#include "traffic_lights.h"
 
 /*****************************    Defines    *******************************/
 
@@ -27,8 +28,9 @@
 /*****************************   Constants   *******************************/
 
 hw_timer_t *timer = NULL;
-// portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED; // only needed when
-// writing to shared memory/variables
+
+// only needed when writing to shared memory/variables
+portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
 
 /*****************************   Variables   *******************************/
 
@@ -39,15 +41,17 @@ hw_timer_t *timer = NULL;
 
 /*****************************   Functions   *******************************/
 
-void IRAM_ATTR onTime() { // IRAM_ATTR forces the code into RAM instead of flash
+void IRAM_ATTR onTime() {
   /*****************************************************************************
    *   Function : See module specification (.h-file)
    *****************************************************************************/
 
-  // portENTER_CRITICAL_ISR(&timerMux); // only needed when writing to shared
-  // memory/variables
-  traffic_cycle();
-  // portEXIT_CRITICAL_ISR(&timerMux);
+  // only needed when writing to shared memory/variables
+  portENTER_CRITICAL_ISR(&timerMux);
+
+  traffic_light0.update_timer(1);
+
+  portEXIT_CRITICAL_ISR(&timerMux);
 }
 
 void setup_timer0() {
@@ -55,14 +59,16 @@ void setup_timer0() {
    *   Function : See module specification (.h-file)
    *****************************************************************************/
 
-  timer = timerBegin(TIMER_0, PRESCALER_1MHz,
-                     true); // prescaler = 80 for 1 MHz clock-signal
-  timerAttachInterrupt(timer, &onTime,
-                       true); // attachs onTime-interrupt to timer0
-  // Fire Interrupt every 1m ticks, so 1s
-  timerAlarmWrite(timer, 1000000,
-                  true); // Fire Interrupt every 1m ticks, so 1s
+  // prescaler = 80 for 1 MHz clock-signal
+  timer = timerBegin(TIMER_0, PRESCALER_1MHz, true);
 
+  // Attach onTime-interrupt to timer0
+  timerAttachInterrupt(timer, &onTime, true);
+
+  // Fire Interrupt every 1M ticks, so 1s
+  timerAlarmWrite(timer, 1000000, true);
+
+  // Enable timer interrupt
   timerAlarmEnable(timer);
 }
 

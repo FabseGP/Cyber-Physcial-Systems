@@ -22,14 +22,10 @@
 
 /***************************** Include files *******************************/
 
+#include "Arduino.h"
 #include "driver/pcnt.h"
 
 /*****************************    Defines    *******************************/
-
-#define INPUT_PIN0 15
-#define INPUT_PIN1 16
-#define INPUT_PIN2 17
-#define INPUT_PIN3 18
 
 /*****************************   Constants   *******************************/
 
@@ -37,51 +33,42 @@
 
 /*****************************    Objects    *******************************/
 
-/*****************************   Functions   *******************************/
+class PCNT_module {
+  private:
+    static uint8_t object_count;
+    uint8_t     input_pin, overflow_counter, overflow_limit, state, delay_timer;
+    uint16_t    filter_value;
+    int16_t     high_limit, pulse_counter;
+    pcnt_unit_t pcnt_unit;
+    pcnt_isr_handle_t user_isr_handle;
+    pcnt_config_t     pcnt_config;
+    static void       static_counter_overflow(void *arg);
 
-void IRAM_ATTR counter_overflow(void *arg);
-/*****************************************************************************
- *   Input    : -
- *   Output   : -
- *   Function : CHANGE ME
- ******************************************************************************/
+  public:
+    PCNT_module();
+    void           init(pcnt_unit_t pcnt_unit, uint8_t input_pin, int16_t limit,
+                        uint16_t filter, uint8_t delay, uint8_t overflow);
+    void           init_pcnt();
+    void           read_pcnt();
+    void           print_pcnt();
+    void IRAM_ATTR counter_overflow();
+};
+
+extern PCNT_module pcnt0, pcnt1, pcnt2, pcnt3;
+
+/*****************************   Functions   *******************************/
 
 void setup_pcnt();
 /*****************************************************************************
  *   Input    : -
  *   Output   : -
- *   Function : CHANGE ME
+ *   Function : Initialize all 4 PCNT-modules
  ******************************************************************************/
 
-void initialize_pcnt(pcnt_unit_t pcnt_unit, pcnt_channel_t pcnt_channel,
-                     uint8_t input_pin);
-/*****************************************************************************
- *   Input    : PCNT-unit, PCNT-channel & input-pin
- *   Output   : -
- *   Function : CHANGE ME
- ********************#include "driver/pcnt.h"
- **********************************************************/
-
-void read_pcnt();
-/*****************************************************************************
- *   Input    : -
- *   Output   : -
- *   Function : CHANGE ME
- ******************************************************************************/
-
-void print_pcnt(void *pvParameters);
-/*****************************************************************************
- *   Input    : -
- *   Output   : -
- *   Function : Configuring the GPIO-ports for input & output
- ******************************************************************************/
-
-void start_pcnt();
-/*****************************************************************************
- *   Input    : -
- *   Output   : -
- *   Function : Starts the PCNT-module task
- ******************************************************************************/
+void pcnt0_task(void *pvParameters);
+void pcnt1_task(void *pvParameters);
+void pcnt2_task(void *pvParameters);
+void pcnt3_task(void *pvParameters);
 
 /****************************** End Of Module *******************************/
 

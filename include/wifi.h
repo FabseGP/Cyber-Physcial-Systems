@@ -34,25 +34,18 @@
 
 /*****************************   Functions   *******************************/
 
-void wifi_setup(String ssid, String password);
+void connect_wifi(String ssid, String password);
 /*****************************************************************************
  *   Input    : SSID and password for WiFi-network
  *   Output   : -
  *   Function : Initialize a WiFi-connection
  ******************************************************************************/
 
-void test_connection(void *pvParameters);
+void traffic_light_api(void *pvParameters);
 /*****************************************************************************
  *   Input    : -
  *   Output   : -
  *   Function : Tests connection to web-server by sending dummy data
- ******************************************************************************/
-
-void start_wifi();
-/*****************************************************************************
- *   Input    : -
- *   Output   : -
- *   Function : Starts task for communicating with the web-server
  ******************************************************************************/
 
 /****************************** End Of Module *******************************/
