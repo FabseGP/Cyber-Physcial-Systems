@@ -92,8 +92,10 @@ void PCNT_module::init_pcnt() {
   pcnt_config.channel        = PCNT_CHANNEL_0;
   pcnt_unit_config(&pcnt_config);
 
-  pcnt_isr_register(&PCNT_module::static_counter_overflow, this, 0,
-                    &user_isr_handle);
+  // pcnt_isr_register(&PCNT_module::static_counter_overflow, this, 0,
+  //                  &user_isr_handle);
+  pcnt_isr_service_install(0);
+  pcnt_isr_handler_add(pcnt_unit, &PCNT_module::static_counter_overflow, this);
   pcnt_intr_enable(pcnt_unit);
 
   pcnt_set_filter_value(pcnt_unit, PCNT_FILTER_VAL);
