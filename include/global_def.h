@@ -2,29 +2,32 @@
  * University of Southern Denmark
  * Project 4. semester
  *
- * MODULENAME.: cars.h
+ * MODULENAME.: global_def.h
  *
  * PROJECT....: Cyber Physical Systems
  *
- * DESCRIPTION: Class for each car
+ * DESCRIPTION: Global definitions
  *
  * Change Log.:
  ******************************************************************************
  * Date    Id    Change
  * DDMMYY
  * --------------------
- * 140424  MoH    Module created
+ * 230424  MoH    Module created
  *
  *****************************************************************************/
 
-#ifndef CARS_H
-#define CARS_H
+#ifndef GLOBAL_DEF_H_
+#define GLOBAL_DEF_H_
 
 /***************************** Include files *******************************/
 
-#include "Arduino.h"
+#include <Arduino.h>
 
 /*****************************    Defines    *******************************/
+
+extern QueueHandle_t     xCarQueue;
+extern SemaphoreHandle_t xCarSemaphore;
 
 /*****************************   Constants   *******************************/
 
@@ -32,34 +35,7 @@
 
 /*****************************    Objects    *******************************/
 
-class Cars {
-  private:
-    static uint8_t object_count;
-    uint8_t        car_id, velocity, date_id, car_type_id, traffic_light_id;
-
-  public:
-    Cars();
-    void           init(uint8_t id, uint8_t speed, uint8_t date, uint8_t type,
-                        uint8_t traffic_light);
-    uint8_t        get_id();
-    uint8_t        get_velocity();
-    uint8_t        get_date();
-    uint8_t        get_type();
-    uint8_t        get_traffic_id();
-    static uint8_t get_count();
-    String         get_parameters();
-};
-
-extern Cars car0;
-
 /*****************************   Functions   *******************************/
-
-void setup_cars();
-/*****************************************************************************
- *   Input    : -
- *   Output   : -
- *   Function : Initialize all cars
- ******************************************************************************/
 
 /****************************** End Of Module *******************************/
 

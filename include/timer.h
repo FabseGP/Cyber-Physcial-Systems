@@ -22,8 +22,6 @@
 
 /***************************** Include files *******************************/
 
-#include "Arduino.h"
-
 /*****************************    Defines    *******************************/
 
 /*****************************   Constants   *******************************/
@@ -39,6 +37,7 @@ void IRAM_ATTR onTime();
  *   Input    : -
  *   Output   : -
  *   Function : Controls alive timer
+ *              IRAM_ATTR forces the code into RAM instead of flash
  ******************************************************************************/
 
 void setup_timer0();

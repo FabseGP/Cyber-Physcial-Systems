@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Univeristy of Southern Denmark
+ * University of Southern Denmark
  * Project in Cyber Physical Systems (CPS)
  *
  * MODULENAME.: main.cpp
@@ -27,6 +27,8 @@
 
 /*****************************    Defines    *******************************/
 
+enum Priorities { IDLE_PRIO, LOW_PRIO, MED_PRIO, HIGH_PRIO };
+
 /*****************************   Constants   *******************************/
 
 /*****************************   Variables   *******************************/
@@ -37,14 +39,28 @@
 
 void setup() {
   Serial.begin(921600);
+
   setup_gpio();
   setup_timer0();
   setup_pcnt();
-  wifi_setup("WIFI_SSID_CHANGE_ME", "WIFI_PASSWORD_CHANGE_ME");
-  start_pcnt();
-  start_wifi();
+  setup_traffic_lights();
+  setup_cars();
+  connect_wifi("WiFimodem-0CCC-2GHz", "VAM21K48");
+  pinMode(16, OUTPUT);
+
+  xTaskCreate(pcnt0_task, "pcnt0_task", 2048, &pcnt0, HIGH_PRIO, NULL);
+  xTaskCreate(pcnt1_task, "pcnt1_task", 2048, &pcnt1, HIGH_PRIO, NULL);
+  xTaskCreate(pcnt2_task, "pcnt2_task", 2048, &pcnt2, HIGH_PRIO, NULL);
+  xTaskCreate(pcnt3_task, "pcnt3_task", 2048, &pcnt3, HIGH_PRIO, NULL);
+  xTaskCreate(traffic_light_api, "wifi_task", 2048, NULL, LOW_PRIO, NULL);
+  xTaskCreate(traffic_cycle, "cycle_task", 512, NULL, LOW_PRIO, NULL);
 }
 
-void loop() {}
+void loop() {
+  digitalWrite(16, HIGH);
+  delay(1);
+  digitalWrite(16, LOW);
+  delay(2);
+}
 
 /****************************** End Of Module *******************************/
