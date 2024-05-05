@@ -41,6 +41,13 @@ void connect_wifi(String ssid, String password);
  *   Function : Initialize a WiFi-connection
  ******************************************************************************/
 
+void connect_eduroam(String ssid, String password, String identity);
+/*****************************************************************************
+ *   Input    : SSID and password for WiFi-network
+ *   Output   : -
+ *   Function : Initialize a WiFi-connection
+ ******************************************************************************/
+
 void api_task(void *pvParameters);
 /*****************************************************************************
  *   Input    : -
