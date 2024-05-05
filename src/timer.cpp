@@ -24,7 +24,7 @@
 #define PRESCALER_1MHz 80
 #define TIMER_0        0
 #define ALARM_1_SECOND 1000000
-#define TIMER_SUBTRACT 1
+#define SECOND_PASSED  1
 
 /*****************************   Constants   *******************************/
 
@@ -35,14 +35,13 @@ portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
 
 /*****************************   Variables   *******************************/
 
-// volatile int interrupts;
-// int          totalInterrupts;
+uint8_t timer_change = 0;
 
 /*****************************    Objects    *******************************/
 
 /*****************************   Functions   *******************************/
 
-void IRAM_ATTR onTime() {
+void IRAM_ATTR timer_interrupt() {
   /*****************************************************************************
    *   Function : See module specification (.h-file)
    *****************************************************************************/
@@ -50,9 +49,7 @@ void IRAM_ATTR onTime() {
   // only needed when writing to shared memory/variables
   portENTER_CRITICAL_ISR(&timerMux);
 
-  traffic_light0.update_timer(TIMER_SUBTRACT);
-  traffic_light1.update_timer(TIMER_SUBTRACT);
-  traffic_light2.update_timer(TIMER_SUBTRACT);
+  timer_change = SECOND_PASSED;
 
   portEXIT_CRITICAL_ISR(&timerMux);
 }
@@ -66,7 +63,7 @@ void setup_timer0() {
   timer = timerBegin(TIMER_0, PRESCALER_1MHz, true);
 
   // Attach onTime-interrupt to timer0
-  timerAttachInterrupt(timer, &onTime, true);
+  timerAttachInterrupt(timer, &timer_interrupt, true);
 
   // Fire Interrupt every 1M ticks, so 1s
   timerAlarmWrite(timer, ALARM_1_SECOND, true);

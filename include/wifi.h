@@ -41,14 +41,7 @@ void connect_wifi(String ssid, String password);
  *   Function : Initialize a WiFi-connection
  ******************************************************************************/
 
-void car_api(void *pvParameters);
-/*****************************************************************************
- *   Input    : -
- *   Output   : -
- *   Function : Tests connection to web-server by sending dummy data
- ******************************************************************************/
-
-void traffic_light_api(void *pvParameters);
+void api_task(void *pvParameters);
 /*****************************************************************************
  *   Input    : -
  *   Output   : -

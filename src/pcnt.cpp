@@ -42,6 +42,7 @@
 #define PCNT_FILTER_VAL  100
 #define TASK_DELAY       100
 #define OVERFLOW_LIMIT   1
+#define NO_FLAGS         0
 
 /*****************************   Constants   *******************************/
 
@@ -96,7 +97,7 @@ void PCNTModule::init_pcnt() {
   // https://docs.espressif.com/projects/esp-idf/en/v4.2/esp32/api-reference/peripherals/pcnt.html#_CPPv420pcnt_isr_handler_add11pcnt_unit_tPFvPvEPv
   // pcnt_isr_register(&PCNT_module::static_counter_overflow, this, 0,
   // &user_isr_handle);
-  pcnt_isr_service_install(0);
+  pcnt_isr_service_install(NO_FLAGS);
   pcnt_isr_handler_add(pcnt_unit, &PCNTModule::static_counter_overflow, this);
   pcnt_intr_enable(pcnt_unit);
 
@@ -135,25 +136,32 @@ void PCNTModule::pcnt_task() {
         if (overflow_counter > overflow_limit) {
           state = CAR;
           uint8_t traffic_light_id;
+          xSemaphoreTake(xTrafficLightSemaphore, (TickType_t)TICKS_WAIT);
           switch (pcnt_unit) {
             case PCNT_UNIT_0: // SEN1
               traffic_light_id = traffic_light0.get_id();
+              traffic_light0.increment_queue();
               break;
             case PCNT_UNIT_1: // SEN2
               traffic_light_id = traffic_light2.get_id();
+              traffic_light2.increment_queue();
               break;
             case PCNT_UNIT_2: // SEN3
               traffic_light_id = traffic_light1.get_id();
+              traffic_light1.increment_queue();
               break;
             case PCNT_UNIT_3: // SEN4
               traffic_light_id = traffic_light1.get_id();
+              traffic_light1.increment_queue();
               break;
             default:
               traffic_light_id = 0;
               break;
           }
-          xSemaphoreTake(xCarSemaphore, (TickType_t)10);
-          xQueueSend(xCarQueue, &traffic_light_id, (TickType_t)10);
+          xSemaphoreGive(xTrafficLightSemaphore);
+
+          xSemaphoreTake(xCarSemaphore, (TickType_t)TICKS_WAIT);
+          xQueueSend(xCarQueue, &traffic_light_id, (TickType_t)TICKS_WAIT);
           xSemaphoreGive(xCarSemaphore);
         } else {
           overflow_counter = RESET;
