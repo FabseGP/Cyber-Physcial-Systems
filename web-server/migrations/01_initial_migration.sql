@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS traffic_light (
 CREATE TABLE IF NOT EXISTS cars (
 	car_id INTEGER NOT NULL,
 	velocity INTEGER NOT NULL,
-	clock TIME NOT NULL,
+	clock TIME(4) NOT NULL,
 	date_id INTEGER NOT NULL,
 	car_type_id INTEGER NOT NULL,
 	traffic_light_id INTEGER NOT NULL,
@@ -53,10 +53,9 @@ INSERT INTO car_type VALUES
 INSERT INTO traffic_light VALUES
 	('0', "Green", "North", "Nyborgvej, 5530 Odense", '0'),
 	('1', "Red", "South", "Damgårdsvej, 5530 Odense", '7'),
-	('2', "Yellow", "West", "Marksvej, 5530 Odense", '7'),
-	('3', "Yellow", "West", "Marksvej, 5530 Odense", '7');
+	('2', "Yellow", "West", "Marksvej, 5530 Odense", '7');
 
 INSERT INTO cars VALUES
-	('1', "50", '12:17:00', '1', '2', '3'),
-	('2', "20", '14:30:39', '3', '1', '1'),
-	('3', "10", '09:12:21', '1', '1', '2');
+	('1', "50", '12:17:00.2020', '1', '2', '0'),
+	('2', "20", '14:30:39.3002', '3', '1', '1'),
+	('3', "10", '09:12:21.1021', '1', '1', '2');

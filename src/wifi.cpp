@@ -16,9 +16,7 @@
 
 /***************************** Include files *******************************/
 
-#include "cars.h"
 #include "global_def.h"
-#include "traffic_lights.h"
 #include <HTTPClient.h>
 #include <WiFi.h>
 
@@ -29,6 +27,9 @@
 /*****************************   Variables   *******************************/
 
 /*****************************    Objects    *******************************/
+
+QueueHandle_t     xCarQueue, xTrafficLightQueue;
+SemaphoreHandle_t xCarSemaphore, xTrafficLightSemaphore;
 
 /*****************************   Functions   *******************************/
 
@@ -50,17 +51,29 @@ void car_api(void *pvParameters) {
 
   while (1) {
     if (WiFi.status() == WL_CONNECTED) {
-      HTTPClient   http;
+      uint8_t traffic_light_id;
+      if (xQueueReceive(xCarQueue, &traffic_light_id, (TickType_t)10) ==
+          pdPASS) {
+        xSemaphoreTake(xCarSemaphore, (TickType_t)10);
 
-      const String server = "http://192.168.0.200:3000";
+        HTTPClient   http;
 
-      const String car0_url =
-          server + "/vehicles/insert" + car0.get_parameters();
+        const String server  = "http://192.168.0.200:3000";
 
-      http.begin(car0_url);
-      http.POST("");
+        const String car_url = server + "/vehicles/insert" +
+                               "?car_id=" + car_counter + "&velocity=" + 2 +
+                               "&date_id=" + 1 + "&car_type_id=" + 2 +
+                               "&traffic_light_id=" + traffic_light_id;
 
-      http.end();
+        http.begin(car_url);
+        http.POST("");
+
+        car_counter++;
+
+        http.end();
+
+        xSemaphoreGive(xCarSemaphore);
+      }
     }
   }
 }
@@ -73,35 +86,32 @@ void traffic_light_api(void *pvParameters) {
   while (1) {
     if (WiFi.status() == WL_CONNECTED) {
 
-      HTTPClient   http;
+      uint8_t traffic_light_id;
+      if (xQueueReceive(xTrafficLightQueue, &traffic_light_id,
+                        (TickType_t)10) == pdPASS) {
+        xSemaphoreTake(xTrafficLightSemaphore, (TickType_t)10);
 
-      const String server = "http://192.168.0.200:3000";
+        HTTPClient   http;
 
-      const String traffic_light0_url =
-          server + "/trafficlights/insert" + traffic_light0.get_parameters();
+        const String traffic_light0_url = traffic_light0.get_url();
 
-      http.begin(traffic_light0_url);
-      http.POST("");
+        http.begin(traffic_light0_url);
+        http.POST("");
 
-      const String traffic_light1_url =
-          server + "/trafficlights/insert" + traffic_light1.get_parameters();
+        const String traffic_light1_url = traffic_light1.get_url();
 
-      http.begin(traffic_light1_url);
-      http.POST("");
+        http.begin(traffic_light1_url);
+        http.POST("");
 
-      const String traffic_light2_url =
-          server + "/trafficlights/insert" + traffic_light2.get_parameters();
+        const String traffic_light2_url = traffic_light2.get_url();
 
-      http.begin(traffic_light2_url);
-      http.POST("");
+        http.begin(traffic_light2_url);
+        http.POST("");
 
-      const String traffic_light3_url =
-          server + "/trafficlights/insert" + traffic_light3.get_parameters();
+        http.end();
 
-      http.begin(traffic_light3_url);
-      http.POST("");
-
-      http.end();
+        xSemaphoreGive(xTrafficLightSemaphore);
+      }
     }
   }
 }

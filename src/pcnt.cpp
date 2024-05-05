@@ -18,6 +18,7 @@
 
 #include "driver/pcnt.h"
 #include "Arduino.h"
+#include "global_def.h"
 #include "pcnt.h"
 #include "soc/pcnt_struct.h"
 
@@ -46,23 +47,23 @@
 
 /*****************************   Variables   *******************************/
 
+uint8_t PCNTModule::object_count = RESET;
+
 /*****************************    Objects    *******************************/
 
-uint8_t     PCNT_module::object_count = RESET;
-
-PCNT_module pcnt0, pcnt1, pcnt2, pcnt3;
+PCNTModule pcnt0, pcnt1, pcnt2, pcnt3;
 
 /*****************************   Functions *******************************/
 
-PCNT_module::PCNT_module() { ++object_count; }
+PCNTModule::PCNTModule() { ++object_count; }
 
-void PCNT_module::static_counter_overflow(void *arg) {
-  PCNT_module *pcnt_module = static_cast<PCNT_module *>(arg);
+void PCNTModule::static_counter_overflow(void *arg) {
+  PCNTModule *pcnt_module = static_cast<PCNTModule *>(arg);
   pcnt_module->counter_overflow();
 }
 
-void PCNT_module::init(pcnt_unit_t unit, uint8_t pin, int16_t limit,
-                       uint16_t filter, uint8_t delay, uint8_t overflow) {
+void PCNTModule::init(pcnt_unit_t unit, uint8_t pin, int16_t limit,
+                      uint16_t filter, uint8_t delay, uint8_t overflow) {
   /*****************************************************************************
    *   Function : See module specification (.h-file)
    *****************************************************************************/
@@ -80,7 +81,7 @@ void PCNT_module::init(pcnt_unit_t unit, uint8_t pin, int16_t limit,
   pcnt_config      = {};
 }
 
-void PCNT_module::init_pcnt() {
+void PCNTModule::init_pcnt() {
   /*****************************************************************************
    *   Function : See module specification (.h-file)
    *****************************************************************************/
@@ -96,7 +97,7 @@ void PCNT_module::init_pcnt() {
   // pcnt_isr_register(&PCNT_module::static_counter_overflow, this, 0,
   // &user_isr_handle);
   pcnt_isr_service_install(0);
-  pcnt_isr_handler_add(pcnt_unit, &PCNT_module::static_counter_overflow, this);
+  pcnt_isr_handler_add(pcnt_unit, &PCNTModule::static_counter_overflow, this);
   pcnt_intr_enable(pcnt_unit);
 
   pcnt_set_filter_value(pcnt_unit, PCNT_FILTER_VAL);
@@ -108,17 +109,17 @@ void PCNT_module::init_pcnt() {
   pcnt_counter_resume(pcnt_unit);
 };
 
-void IRAM_ATTR PCNT_module::counter_overflow() {
-  overflow_counter++;
+void IRAM_ATTR PCNTModule::counter_overflow() {
+  ++overflow_counter;
   PCNT.int_clr.val = BIT(pcnt_unit);
   pcnt_counter_clear(pcnt_unit);
 }
 
-void PCNT_module::read_pcnt() {
+void PCNTModule::read_pcnt() {
   pcnt_get_counter_value(pcnt_unit, &pulse_counter);
 }
 
-void PCNT_module::print_pcnt() {
+void PCNTModule::pcnt_task() {
   while (1) {
 
     switch (state) {
@@ -133,8 +134,30 @@ void PCNT_module::print_pcnt() {
         // than the sat limit, a car has arrived
         if (overflow_counter > overflow_limit) {
           state = CAR;
+          uint8_t traffic_light_id;
+          switch (pcnt_unit) {
+            case PCNT_UNIT_0: // SEN1
+              traffic_light_id = traffic_light0.get_id();
+              break;
+            case PCNT_UNIT_1: // SEN2
+              traffic_light_id = traffic_light2.get_id();
+              break;
+            case PCNT_UNIT_2: // SEN3
+              traffic_light_id = traffic_light1.get_id();
+              break;
+            case PCNT_UNIT_3: // SEN4
+              traffic_light_id = traffic_light1.get_id();
+              break;
+            default:
+              traffic_light_id = 0;
+              break;
+          }
+          xSemaphoreTake(xCarSemaphore, (TickType_t)10);
+          xQueueSend(xCarQueue, &traffic_light_id, (TickType_t)10);
+          xSemaphoreGive(xCarSemaphore);
         } else {
           overflow_counter = RESET;
+          //    Serial.printf("not changed");
         }
         break;
 
@@ -150,11 +173,15 @@ void PCNT_module::print_pcnt() {
           state = NO_CAR;
         }
         overflow_counter = RESET;
-        read_pcnt();
-        Serial.print(pulse_counter);
-        Serial.print("\t");
-        Serial.print(overflow_counter);
-        Serial.print("\n");
+        /*        read_pcnt();
+                Serial.print(pulse_counter);
+                Serial.print("\t");
+                Serial.print(overflow_counter);
+                Serial.print("\n"); */
+
+        break;
+
+      default:
         break;
     }
   }
@@ -181,30 +208,30 @@ void setup_pcnt() {
 }
 
 void pcnt0_task(void *pvParameters) {
-  PCNT_module *pcnt_module = static_cast<PCNT_module *>(pvParameters);
+  PCNTModule *pcnt_module = static_cast<PCNTModule *>(pvParameters);
   while (1) {
-    pcnt_module->print_pcnt();
+    pcnt_module->pcnt_task();
   }
 }
 
 void pcnt1_task(void *pvParameters) {
-  PCNT_module *pcnt_module = static_cast<PCNT_module *>(pvParameters);
+  PCNTModule *pcnt_module = static_cast<PCNTModule *>(pvParameters);
   while (1) {
-    pcnt_module->print_pcnt();
+    pcnt_module->pcnt_task();
   }
 }
 
 void pcnt2_task(void *pvParameters) {
-  PCNT_module *pcnt_module = static_cast<PCNT_module *>(pvParameters);
+  PCNTModule *pcnt_module = static_cast<PCNTModule *>(pvParameters);
   while (1) {
-    pcnt_module->print_pcnt();
+    pcnt_module->pcnt_task();
   }
 }
 
 void pcnt3_task(void *pvParameters) {
-  PCNT_module *pcnt_module = static_cast<PCNT_module *>(pvParameters);
+  PCNTModule *pcnt_module = static_cast<PCNTModule *>(pvParameters);
   while (1) {
-    pcnt_module->print_pcnt();
+    pcnt_module->pcnt_task();
   }
 }
 
