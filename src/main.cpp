@@ -58,8 +58,7 @@ void setup() {
   setup_pcnt();
   setup_traffic_lights();
   connect_wifi("WiFimodem-0CCC-2GHz", "VAM21K48");
-
-  pinMode(16, OUTPUT);
+  // connect_eduroam("eduroam", "VAM21K48", "fapet22@student.sdu.dk");
 
   TaskHandle_t task_0, task_1, task_2, task_3, task_4, task_5;
 
@@ -86,11 +85,6 @@ void setup() {
   xSemaphoreGive(xTrafficLightSemaphore);
 }
 
-void loop() {
-  digitalWrite(16, HIGH);
-  delay(1);
-  digitalWrite(16, LOW);
-  delay(2);
-}
+void loop() {}
 
 /****************************** End Of Module *******************************/

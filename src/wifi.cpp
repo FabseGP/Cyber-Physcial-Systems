@@ -44,6 +44,17 @@ void connect_wifi(String ssid, String password) {
   }
 }
 
+void connect_eduroam(String ssid, String password, String identity) {
+  /*****************************************************************************
+   *   Function : See module specification (.h-file)
+   *****************************************************************************/
+
+  WiFi.begin(ssid, WPA2_AUTH_PEAP, identity, identity, password);
+
+  while (WiFi.status() != WL_CONNECTED) {
+  }
+}
+
 void api_task(void *pvParameters) {
   /*****************************************************************************
    *   Function : See module specification (.h-file)

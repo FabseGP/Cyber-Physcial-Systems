@@ -80,6 +80,7 @@ void PCNTModule::init(pcnt_unit_t unit, uint8_t pin, int16_t limit,
   state            = NO_CAR;
   user_isr_handle  = NULL;
   pcnt_config      = {};
+  init_pcnt();
 }
 
 void PCNTModule::init_pcnt() {
@@ -208,11 +209,6 @@ void setup_pcnt() {
              TASK_DELAY, OVERFLOW_LIMIT);
   pcnt3.init(PCNT_UNIT_3, INPUT_PIN_3, PCNT_H_LIM_VAL, PCNT_FILTER_VAL,
              TASK_DELAY, OVERFLOW_LIMIT);
-
-  pcnt0.init_pcnt();
-  pcnt1.init_pcnt();
-  pcnt2.init_pcnt();
-  pcnt3.init_pcnt();
 }
 
 void pcnt0_task(void *pvParameters) {
