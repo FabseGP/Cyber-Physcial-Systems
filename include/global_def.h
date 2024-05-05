@@ -22,18 +22,25 @@
 
 /***************************** Include files *******************************/
 
+#include "pcnt.h"
+#include "traffic_lights.h"
 #include <Arduino.h>
 
 /*****************************    Defines    *******************************/
 
-extern QueueHandle_t     xCarQueue;
-extern SemaphoreHandle_t xCarSemaphore;
+extern QueueHandle_t     xCarQueue, xTrafficLightQueue;
+extern SemaphoreHandle_t xCarSemaphore, xTrafficLightSemaphore;
 
 /*****************************   Constants   *******************************/
 
 /*****************************   Variables   *******************************/
 
+extern uint16_t car_counter;
+
 /*****************************    Objects    *******************************/
+
+extern PCNTModule    pcnt0, pcnt1, pcnt2, pcnt3;
+extern TrafficLights traffic_light0, traffic_light1, traffic_light2;
 
 /*****************************   Functions   *******************************/
 

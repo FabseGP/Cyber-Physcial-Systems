@@ -17,13 +17,14 @@
 /***************************** Include files *******************************/
 
 #include "Arduino.h"
-#include "traffic_cycle.h"
-#include "traffic_lights.h"
+#include "global_def.h"
 
 /*****************************    Defines    *******************************/
 
 #define PRESCALER_1MHz 80
 #define TIMER_0        0
+#define ALARM_1_SECOND 1000000
+#define TIMER_SUBTRACT 1
 
 /*****************************   Constants   *******************************/
 
@@ -49,7 +50,9 @@ void IRAM_ATTR onTime() {
   // only needed when writing to shared memory/variables
   portENTER_CRITICAL_ISR(&timerMux);
 
-  traffic_light0.update_timer(1);
+  traffic_light0.update_timer(TIMER_SUBTRACT);
+  traffic_light1.update_timer(TIMER_SUBTRACT);
+  traffic_light2.update_timer(TIMER_SUBTRACT);
 
   portEXIT_CRITICAL_ISR(&timerMux);
 }
@@ -66,7 +69,7 @@ void setup_timer0() {
   timerAttachInterrupt(timer, &onTime, true);
 
   // Fire Interrupt every 1M ticks, so 1s
-  timerAlarmWrite(timer, 1000000, true);
+  timerAlarmWrite(timer, ALARM_1_SECOND, true);
 
   // Enable timer interrupt
   timerAlarmEnable(timer);

@@ -17,32 +17,51 @@
 /***************************** Include files *******************************/
 
 #include "traffic_lights.h"
+#include "global_def.h"
 #include <Arduino.h>
 #include <UrlEncode.h>
 
 /*****************************    Defines    *******************************/
 
+#define TRAFFIC_LIGHT_E 0
+#define TRAFFIC_LIGHT_W 1
+#define TRAFFIC_LIGHT_N 2
+
+#define RED_NS          GPIO_NUM_6
+#define YELLOW_NS       GPIO_NUM_5
+#define GREEN_NS        GPIO_NUM_4
+
+#define RED_WE          GPIO_NUM_3
+#define YELLOW_WE       GPIO_NUM_2
+#define GREEN_WE        GPIO_NUM_1
+
+#define EMPTY_QUEUE     0
+
 /*****************************   Constants   *******************************/
 
 /*****************************   Variables   *******************************/
 
+uint8_t TrafficLights::object_count = 0;
+
 /*****************************    Objects    *******************************/
 
-uint8_t       TrafficLights::object_count = 0;
-
-TrafficLights traffic_light0, traffic_light1, traffic_light2, traffic_light3;
+TrafficLights traffic_light0, traffic_light1, traffic_light2;
 
 /*****************************   Functions   *******************************/
 
 TrafficLights::TrafficLights() { ++object_count; }
 
 void TrafficLights::init(uint8_t id, String mode, String placement, String area,
-                         uint8_t queue) {
+                         uint8_t queue, gpio_num_t red_pin,
+                         gpio_num_t yellow_pin, gpio_num_t green_pin) {
   traffic_light_id = id;
   state            = mode;
   direction        = placement;
   location         = area;
   queue_size       = queue;
+  red_led          = red_pin;
+  yellow_led       = yellow_pin;
+  green_led        = green_pin;
 }
 
 uint8_t TrafficLights::get_id() { return traffic_light_id; }
@@ -75,11 +94,33 @@ void    TrafficLights::mode_cycling() {}
 
 uint8_t TrafficLights::get_count() { return object_count; }
 
-String  TrafficLights::get_parameters() {
-  return String("?traffic_light_id=") + traffic_light_id +
+String  TrafficLights::get_url() {
+  return String("http://192.168.0.200:3000/trafficlights/insert") +
+         "?traffic_light_id=" + traffic_light_id +
          "&state=" + urlEncode(state) + "&direction=" + urlEncode(direction) +
          "&location=" + urlEncode(location) + "&queue_size=" + queue_size;
   ;
+}
+
+void TrafficLights::set_red() {
+  digitalWrite(red_led, HIGH);
+  digitalWrite(yellow_led, LOW);
+  digitalWrite(green_led, LOW);
+}
+void TrafficLights::set_yellow() {
+  digitalWrite(red_led, LOW);
+  digitalWrite(yellow_led, HIGH);
+  digitalWrite(green_led, LOW);
+}
+void TrafficLights::set_green() {
+  digitalWrite(red_led, LOW);
+  digitalWrite(yellow_led, LOW);
+  digitalWrite(green_led, HIGH);
+}
+void TrafficLights::set_red_yellow() {
+  digitalWrite(red_led, HIGH);
+  digitalWrite(yellow_led, HIGH);
+  digitalWrite(green_led, LOW);
 }
 
 void setup_traffic_lights() {
@@ -87,10 +128,15 @@ void setup_traffic_lights() {
    *   Function : See module specification (.h-file)
    *****************************************************************************/
 
-  traffic_light0.init(0, "Green", "South", "Faaborgvej 23, 5610 Assens", 20);
-  traffic_light1.init(1, "Green", "South", "Faaborgvej 24, 5610 Assens", 20);
-  traffic_light2.init(2, "Green", "South", "Faaborgvej 23, 5610 Assens", 20);
-  traffic_light3.init(3, "Green", "South", "Faaborgvej 23, 5610 Assens", 20);
+  traffic_light0.init(TRAFFIC_LIGHT_E, "Green", "East",
+                      "Faaborgvej 23, 5610 Assens", EMPTY_QUEUE, RED_WE,
+                      YELLOW_WE, GREEN_WE);
+  traffic_light1.init(TRAFFIC_LIGHT_W, "Green", "West",
+                      "Faaborgvej 24, 5610 Assens", EMPTY_QUEUE, RED_WE,
+                      YELLOW_WE, GREEN_WE);
+  traffic_light2.init(TRAFFIC_LIGHT_N, "Green", "North",
+                      "Faaborgvej 25, 5610 Assens", EMPTY_QUEUE, RED_NS,
+                      YELLOW_NS, GREEN_NS);
 }
 
 /****************************** End Of Module *******************************/

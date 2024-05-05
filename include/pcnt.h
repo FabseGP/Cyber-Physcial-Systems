@@ -33,7 +33,7 @@
 
 /*****************************    Objects    *******************************/
 
-class PCNT_module {
+class PCNTModule {
   private:
     static uint8_t object_count;
     uint8_t     input_pin, overflow_counter, overflow_limit, state, delay_timer;
@@ -45,16 +45,14 @@ class PCNT_module {
     static void       static_counter_overflow(void *arg);
 
   public:
-    PCNT_module();
+    PCNTModule();
     void           init(pcnt_unit_t pcnt_unit, uint8_t input_pin, int16_t limit,
                         uint16_t filter, uint8_t delay, uint8_t overflow);
     void           init_pcnt();
     void           read_pcnt();
-    void           print_pcnt();
+    void           pcnt_task();
     void IRAM_ATTR counter_overflow();
 };
-
-extern PCNT_module pcnt0, pcnt1, pcnt2, pcnt3;
 
 /*****************************   Functions   *******************************/
 
