@@ -44,7 +44,7 @@ void connect_wifi(String ssid, String password) {
   }
 }
 
-void car_api(void *pvParameters) {
+void api_task(void *pvParameters) {
   /*****************************************************************************
    *   Function : See module specification (.h-file)
    *****************************************************************************/
@@ -52,9 +52,9 @@ void car_api(void *pvParameters) {
   while (1) {
     if (WiFi.status() == WL_CONNECTED) {
       uint8_t traffic_light_id;
-      if (xQueueReceive(xCarQueue, &traffic_light_id, (TickType_t)10) ==
+      if (xQueueReceive(xCarQueue, &traffic_light_id, (TickType_t)TICKS_WAIT) ==
           pdPASS) {
-        xSemaphoreTake(xCarSemaphore, (TickType_t)10);
+        xSemaphoreTake(xCarSemaphore, (TickType_t)TICKS_WAIT);
 
         HTTPClient   http;
 
@@ -74,22 +74,10 @@ void car_api(void *pvParameters) {
 
         xSemaphoreGive(xCarSemaphore);
       }
-    }
-  }
-}
 
-void traffic_light_api(void *pvParameters) {
-  /*****************************************************************************
-   *   Function : See module specification (.h-file)
-   *****************************************************************************/
-
-  while (1) {
-    if (WiFi.status() == WL_CONNECTED) {
-
-      uint8_t traffic_light_id;
       if (xQueueReceive(xTrafficLightQueue, &traffic_light_id,
-                        (TickType_t)10) == pdPASS) {
-        xSemaphoreTake(xTrafficLightSemaphore, (TickType_t)10);
+                        (TickType_t)TICKS_WAIT) == pdPASS) {
+        xSemaphoreTake(xTrafficLightSemaphore, (TickType_t)TICKS_WAIT);
 
         HTTPClient   http;
 

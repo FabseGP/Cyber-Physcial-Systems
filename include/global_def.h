@@ -28,6 +28,8 @@
 
 /*****************************    Defines    *******************************/
 
+#define TICKS_WAIT 10
+
 extern QueueHandle_t     xCarQueue, xTrafficLightQueue;
 extern SemaphoreHandle_t xCarSemaphore, xTrafficLightSemaphore;
 
@@ -36,6 +38,7 @@ extern SemaphoreHandle_t xCarSemaphore, xTrafficLightSemaphore;
 /*****************************   Variables   *******************************/
 
 extern uint16_t car_counter;
+extern uint8_t  timer_change, traffic_state;
 
 /*****************************    Objects    *******************************/
 
