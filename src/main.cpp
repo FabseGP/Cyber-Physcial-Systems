@@ -57,8 +57,9 @@ void setup() {
   setup_timer0();
   setup_pcnt();
   setup_traffic_lights();
-  connect_wifi("WiFimodem-0CCC-2GHz", "VAM21K48");
-  // connect_eduroam("eduroam", "VAM21K48", "fapet22@student.sdu.dk");
+  connect_wifi("fabsewifi", "fabseman");
+  // connect_eduroam("eduroam", "Phosphate6(Earthly(Footgear",
+  //      "fapet22@student.sdu.dk");
 
   TaskHandle_t task_0, task_1, task_2, task_3, task_4, task_5;
 
@@ -78,8 +79,11 @@ void setup() {
               &task_3);
   xTaskCreate(api_task, "api_task", LARGE_STACK, NULL, MED_PRIO, &task_4);
 
-  // if not LOW_PRIO, the PCNT-counters doesn't work + no api-transfer
-  xTaskCreate(traffic_cycle, "cycle_task", MED_STACK, NULL, LOW_PRIO, &task_5);
+  // if not LOW_PRIO, the PCNT-counters doesn't work + no
+  // api-transfer
+  //  xTaskCreate(traffic_cycle, "cycle_task", LARGE_STACK,
+  //  NULL, LOW_PRIO,
+  //            &task_5);
 
   xSemaphoreGive(xCarSemaphore);
   xSemaphoreGive(xTrafficLightSemaphore);

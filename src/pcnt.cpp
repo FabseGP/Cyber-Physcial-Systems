@@ -38,10 +38,10 @@
 #define RESET            0
 #define CAR              1
 
-#define PCNT_H_LIM_VAL   10
+#define PCNT_H_LIM_VAL   920
 #define PCNT_FILTER_VAL  100
 #define TASK_DELAY       100
-#define OVERFLOW_LIMIT   1
+#define OVERFLOW_LIMIT   10
 #define NO_FLAGS         0
 
 /*****************************   Constants   *******************************/
@@ -164,9 +164,10 @@ void PCNTModule::pcnt_task() {
           xSemaphoreTake(xCarSemaphore, (TickType_t)TICKS_WAIT);
           xQueueSend(xCarQueue, &traffic_light_id, (TickType_t)TICKS_WAIT);
           xSemaphoreGive(xCarSemaphore);
+          overflow_counter = RESET;
         } else {
           overflow_counter = RESET;
-          //    Serial.printf("not changed");
+          //  Serial.printf("not changed");
         }
         break;
 
@@ -178,10 +179,12 @@ void PCNTModule::pcnt_task() {
 
         // if the overflow_count is less than the limit, the frequency of the
         // signal is not what is expected for a car passing by
-        if (overflow_counter < overflow_limit) {
-          state = NO_CAR;
+        if (overflow_counter > overflow_limit) {
+          overflow_counter = RESET;
+        } else {
+          overflow_counter = RESET;
+          state            = NO_CAR;
         }
-        overflow_counter = RESET;
         /*        read_pcnt();
                 Serial.print(pulse_counter);
                 Serial.print("\t");

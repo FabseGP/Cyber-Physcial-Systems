@@ -39,7 +39,7 @@
 
 #define RESET         0
 #define SECOND_PASSED 1
-#define SECOND        1
+#define ONE_SECOND    1
 
 /*****************************   Constants   *******************************/
 
@@ -52,8 +52,8 @@
 void traffic_algorithm() {
   if (timer_change == SECOND_PASSED) {
 
-    traffic_light0.decrement_timer(SECOND);
-    traffic_light2.decrement_timer(SECOND);
+    traffic_light0.decrement_timer(ONE_SECOND);
+    traffic_light2.decrement_timer(ONE_SECOND);
 
     String we_state = traffic_light0.get_state();
     String ns_state = traffic_light2.get_state();
@@ -65,25 +65,31 @@ void traffic_algorithm() {
       traffic_light2.decrement_queue();
     }
 
-    uint8_t we_queue_size = traffic_light0.get_queue_size();
-    uint8_t ns_queue_size = traffic_light2.get_queue_size();
+    uint8_t we_queue_size_1 = traffic_light0.get_queue_size();
+    uint8_t we_queue_size_2 = traffic_light1.get_queue_size();
+    uint8_t ns_queue_size   = traffic_light2.get_queue_size();
 
-    if (we_queue_size > 5) {
-      if (we_state == "Green") {
-        traffic_light0.increment_timer(SECOND);
-        traffic_light2.increment_timer(SECOND);
-      } else if (we_state == "Red") {
-        traffic_light0.decrement_timer(SECOND);
-        traffic_light2.decrement_timer(SECOND);
-      }
-    } else if (ns_queue_size > 5) {
-      if (ns_state == "Green") {
-        traffic_light0.increment_timer(SECOND);
-        traffic_light2.increment_timer(SECOND);
-      } else if (ns_state == "Red") {
-        traffic_light0.decrement_timer(SECOND);
-        traffic_light2.decrement_timer(SECOND);
-      }
+    if (((we_queue_size_1 > 5 || we_queue_size_2 > 5) && we_state == "Green") ||
+        (ns_queue_size > 5 && ns_state == "Green")) {
+      traffic_light0.increment_timer(ONE_SECOND);
+      traffic_light2.increment_timer(ONE_SECOND);
+    } else if (((we_queue_size_1 > 5 || we_queue_size_2 > 5) &&
+                we_state == "Red") ||
+               (ns_queue_size > 5 && ns_state == "Red")) {
+      traffic_light0.decrement_timer(ONE_SECOND);
+      traffic_light2.decrement_timer(ONE_SECOND);
+    }
+
+    if ((we_queue_size_1 >= 1 || we_queue_size_2 >= 1) &&
+        (we_state != "Green" || we_state != "RedYellow") &&
+        ns_queue_size == 0) {
+      traffic_light0.set_timer(0);
+      traffic_light2.set_timer(0);
+    } else if (ns_queue_size >= 1 &&
+               (ns_state != "Green" || ns_state != "RedYellow") &&
+               (we_queue_size_1 == 0 && we_queue_size_2 == 0)) {
+      traffic_light0.set_timer(0);
+      traffic_light2.set_timer(0);
     }
 
     timer_change = RESET;
@@ -102,7 +108,6 @@ void traffic_cycle(void *pvParameters) {
     static uint8_t traffic_state = WE_READY;
 
     uint8_t        timer         = traffic_light0.get_timer();
-    Serial.println(timer);
 
     if (timer == RESET) {
 
