@@ -58,8 +58,8 @@ void setup() {
   setup_pcnt();
   setup_traffic_lights();
   connect_wifi("fabsewifi", "fabseman");
-  // connect_eduroam("eduroam", "Phosphate6(Earthly(Footgear",
-  //      "fapet22@student.sdu.dk");
+  // connect_eduroam("eduroam", "CHANGE_ME",
+  //      "CHANGE_ME");
 
   TaskHandle_t task_0, task_1, task_2, task_3, task_4, task_5;
 
