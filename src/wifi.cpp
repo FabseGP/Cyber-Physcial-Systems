@@ -49,7 +49,8 @@ void connect_eduroam(String ssid, String password, String identity) {
    *   Function : See module specification (.h-file)
    *****************************************************************************/
 
-  WiFi.begin(ssid, WPA2_AUTH_PEAP, identity, identity, password);
+  WiFi.begin(ssid, WPA2_AUTH_PEAP, "anonymous@student.sdu.dk", identity,
+             password);
 
   while (WiFi.status() != WL_CONNECTED) {
   }
@@ -62,14 +63,15 @@ void api_task(void *pvParameters) {
 
   while (1) {
     if (WiFi.status() == WL_CONNECTED) {
-      uint8_t traffic_light_id;
+      uint8_t traffic_light_id = 1;
+
       if (xQueueReceive(xCarQueue, &traffic_light_id, (TickType_t)TICKS_WAIT) ==
           pdPASS) {
         xSemaphoreTake(xCarSemaphore, (TickType_t)TICKS_WAIT);
 
         HTTPClient   http;
 
-        const String server  = "http://192.168.0.200:3000";
+        const String server  = "http://192.168.171.208:3000";
 
         const String car_url = server + "/vehicles/insert" +
                                "?car_id=" + car_counter + "&velocity=" + 2 +
@@ -84,35 +86,35 @@ void api_task(void *pvParameters) {
         http.end();
 
         xSemaphoreGive(xCarSemaphore);
-      }
+        Serial.println("sent");
 
-      if (xQueueReceive(xTrafficLightQueue, &traffic_light_id,
-                        (TickType_t)TICKS_WAIT) == pdPASS) {
-        xSemaphoreTake(xTrafficLightSemaphore, (TickType_t)TICKS_WAIT);
+        if (xQueueReceive(xTrafficLightQueue, &traffic_light_id,
+                          (TickType_t)TICKS_WAIT) == pdPASS) {
+          xSemaphoreTake(xTrafficLightSemaphore, (TickType_t)TICKS_WAIT);
 
-        HTTPClient   http;
+          HTTPClient   http;
 
-        const String traffic_light0_url = traffic_light0.get_url();
+          const String traffic_light0_url = traffic_light0.get_url();
 
-        http.begin(traffic_light0_url);
-        http.POST("");
+          http.begin(traffic_light0_url);
+          http.POST("");
 
-        const String traffic_light1_url = traffic_light1.get_url();
+          const String traffic_light1_url = traffic_light1.get_url();
 
-        http.begin(traffic_light1_url);
-        http.POST("");
+          http.begin(traffic_light1_url);
+          http.POST("");
 
-        const String traffic_light2_url = traffic_light2.get_url();
+          const String traffic_light2_url = traffic_light2.get_url();
 
-        http.begin(traffic_light2_url);
-        http.POST("");
+          http.begin(traffic_light2_url);
+          http.POST("");
 
-        http.end();
+          http.end();
 
-        xSemaphoreGive(xTrafficLightSemaphore);
+          xSemaphoreGive(xTrafficLightSemaphore);
+        }
       }
     }
   }
-}
 
-/****************************** End Of Module *******************************/
+  /****************************** End Of Module *******************************/
