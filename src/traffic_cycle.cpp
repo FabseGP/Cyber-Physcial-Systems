@@ -59,8 +59,8 @@ void traffic_algorithm() {
     traffic_light0.decrement_timer(ONE_SECOND);
     traffic_light2.decrement_timer(ONE_SECOND);
 
-    String we_state = traffic_light0.get_state();
-    String ns_state = traffic_light2.get_state();
+    String we_state = traffic_light0.get_state(),
+           ns_state = traffic_light2.get_state();
 
     if (we_state == "Green" || we_state == "Yellow") {
       traffic_light0.decrement_queue();
@@ -69,9 +69,9 @@ void traffic_algorithm() {
       traffic_light2.decrement_queue();
     }
 
-    uint8_t we_queue_size_1 = traffic_light0.get_queue_size();
-    uint8_t we_queue_size_2 = traffic_light1.get_queue_size();
-    uint8_t ns_queue_size   = traffic_light2.get_queue_size();
+    uint8_t we_queue_size_1 = traffic_light0.get_queue_size(),
+            we_queue_size_2 = traffic_light1.get_queue_size(),
+            ns_queue_size   = traffic_light2.get_queue_size();
 
     if (((we_queue_size_1 > QUEUE_LIMIT || we_queue_size_2 > QUEUE_LIMIT) &&
          we_state == "Green") ||
@@ -98,6 +98,12 @@ void traffic_algorithm() {
       traffic_light0.set_timer(RESET);
       traffic_light2.set_timer(RESET);
     }
+
+    uint8_t traffic_light0_id = traffic_light0.get_id();
+
+    xSemaphoreTake(xTrafficLightSemaphore, (TickType_t)TICKS_WAIT);
+    xQueueSend(xTrafficLightQueue, &traffic_light0_id, (TickType_t)TICKS_WAIT);
+    xSemaphoreGive(xTrafficLightSemaphore);
 
     timer_change = RESET;
   }
