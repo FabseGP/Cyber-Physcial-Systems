@@ -31,13 +31,17 @@
 
 #define IDLE_TIME     10
 #define NS_READY_TIME 2
-#define NS_GO_TIME    7
+#define NS_GO_TIME    18
 #define NS_WAIT_TIME  3
 #define WE_READY_TIME 2
-#define WE_GO_TIME    7
+#define WE_GO_TIME    18
 #define WE_WAIT_TIME  3
 
+#define QUEUE_LIMIT   5
+#define MINIMUM_QUEUE 1
+
 #define RESET         0
+#define EMPTY         0
 #define SECOND_PASSED 1
 #define ONE_SECOND    1
 
@@ -69,27 +73,30 @@ void traffic_algorithm() {
     uint8_t we_queue_size_2 = traffic_light1.get_queue_size();
     uint8_t ns_queue_size   = traffic_light2.get_queue_size();
 
-    if (((we_queue_size_1 > 5 || we_queue_size_2 > 5) && we_state == "Green") ||
-        (ns_queue_size > 5 && ns_state == "Green")) {
+    if (((we_queue_size_1 > QUEUE_LIMIT || we_queue_size_2 > QUEUE_LIMIT) &&
+         we_state == "Green") ||
+        (ns_queue_size > QUEUE_LIMIT && ns_state == "Green")) {
       traffic_light0.increment_timer(ONE_SECOND);
       traffic_light2.increment_timer(ONE_SECOND);
-    } else if (((we_queue_size_1 > 5 || we_queue_size_2 > 5) &&
+    } else if (((we_queue_size_1 > QUEUE_LIMIT ||
+                 we_queue_size_2 > QUEUE_LIMIT) &&
                 we_state == "Red") ||
-               (ns_queue_size > 5 && ns_state == "Red")) {
+               (ns_queue_size > QUEUE_LIMIT && ns_state == "Red")) {
       traffic_light0.decrement_timer(ONE_SECOND);
       traffic_light2.decrement_timer(ONE_SECOND);
     }
 
-    if ((we_queue_size_1 >= 1 || we_queue_size_2 >= 1) &&
+    if ((we_queue_size_1 >= MINIMUM_QUEUE ||
+         we_queue_size_2 >= MINIMUM_QUEUE) &&
         (we_state != "Green" || we_state != "RedYellow") &&
-        ns_queue_size == 0) {
-      traffic_light0.set_timer(0);
-      traffic_light2.set_timer(0);
-    } else if (ns_queue_size >= 1 &&
+        ns_queue_size == EMPTY) {
+      traffic_light0.set_timer(RESET);
+      traffic_light2.set_timer(RESET);
+    } else if (ns_queue_size >= MINIMUM_QUEUE &&
                (ns_state != "Green" || ns_state != "RedYellow") &&
-               (we_queue_size_1 == 0 && we_queue_size_2 == 0)) {
-      traffic_light0.set_timer(0);
-      traffic_light2.set_timer(0);
+               (we_queue_size_1 == EMPTY && we_queue_size_2 == EMPTY)) {
+      traffic_light0.set_timer(RESET);
+      traffic_light2.set_timer(RESET);
     }
 
     timer_change = RESET;

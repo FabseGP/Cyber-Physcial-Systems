@@ -37,8 +37,9 @@
 #define LARGE_STACK 2024
 
 #define BAUDRATE    921600
-#define RESET       0
 #define QUEUE_SIZE  10
+
+#define RESET       0
 
 /*****************************   Constants   *******************************/
 
