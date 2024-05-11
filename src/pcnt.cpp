@@ -24,30 +24,34 @@
 
 /*****************************    Defines    *******************************/
 
-#define PCNT_FREQ_UNIT_0 PCNT_UNIT_0
-#define PCNT_FREQ_UNIT_1 PCNT_UNIT_1
-#define PCNT_FREQ_UNIT_2 PCNT_UNIT_2
-#define PCNT_FREQ_UNIT_3 PCNT_UNIT_3
+#define PCNT_FREQ_UNIT_0    PCNT_UNIT_0
+#define PCNT_FREQ_UNIT_1    PCNT_UNIT_1
+#define PCNT_FREQ_UNIT_2    PCNT_UNIT_2
+#define PCNT_FREQ_UNIT_3    PCNT_UNIT_3
 
-#define INPUT_PIN_0      7
-#define INPUT_PIN_1      8
-#define INPUT_PIN_2      9
-#define INPUT_PIN_3      21
+#define INPUT_PIN_0         7
+#define INPUT_PIN_1         8
+#define INPUT_PIN_2         9
+#define INPUT_PIN_3         21
 
-#define NO_CAR           0
-#define RESET            0
-#define CAR              1
+#define PCNT_H_LIM_VAL      460
+#define PCNT_H_LIM_VAL_2    130
+#define PCNT_H_LIM_VAL_3    460
+#define PCNT_H_LIM_VAL_4    130
+#define PCNT_FILTER_VAL     100
+#define TASK_DELAY          50
+#define OVERFLOW_LIMIT      10
+#define NO_FLAGS            0
 
-#define PCNT_H_LIM_VAL   920 / 2
-#define PCNT_H_LIM_VAL_2 260 / 2
-#define PCNT_H_LIM_VAL_3 920 / 2
-#define PCNT_H_LIM_VAL_4 260 / 2
-#define PCNT_FILTER_VAL  100
-#define TASK_DELAY       50
-#define OVERFLOW_LIMIT   10
-#define NO_FLAGS         0
+#define DISTANCE_M          0.18
+#define VELOCITY_CONVERSION 3.6
 
-#define DISTANCE         0.18
+#define NO_CAR              0
+#define CAR                 1
+
+#define RESET               0
+#define FALSE               0
+#define TRUE                1
 
 /*****************************   Constants   *******************************/
 
@@ -57,7 +61,7 @@ uint8_t        PCNTModule::object_count = RESET;
 
 struct timeval system_time;
 float          time_pre, time_now;
-uint8_t        first = 0, second = 0;
+uint8_t        first, second;
 
 /*****************************    Objects *******************************/
 
@@ -159,13 +163,14 @@ void PCNTModule::pcnt_task() {
             case PCNT_UNIT_2: // SEN3
               traffic_light_id = traffic_light1.get_id();
               traffic_light1.increment_queue();
-              if (first == 1) {
+              if (first == TRUE) {
                 gettimeofday(&system_time, NULL);
                 time_now = (float)system_time.tv_sec * 1000000L +
                            (float)system_time.tv_usec;
-                velocity = (DISTANCE / ((time_now - time_pre) / 1000000)) * 3.6;
-                first    = 0;
-                second   = 1;
+                velocity = (DISTANCE_M / ((time_now - time_pre) / 1000000)) *
+                           VELOCITY_CONVERSION;
+                first  = RESET;
+                second = TRUE;
               }
               break;
             case PCNT_UNIT_3: // SEN4
@@ -174,7 +179,7 @@ void PCNTModule::pcnt_task() {
               gettimeofday(&system_time, NULL);
               time_pre = (float)system_time.tv_sec * 1000000L +
                          (float)system_time.tv_usec;
-              first = 1;
+              first = TRUE;
               break;
             default:
               traffic_light_id = 0;
@@ -188,7 +193,6 @@ void PCNTModule::pcnt_task() {
           overflow_counter = RESET;
         } else {
           overflow_counter = RESET;
-          //  Serial.printf("not changed");
         }
         break;
 
@@ -205,13 +209,7 @@ void PCNTModule::pcnt_task() {
         } else {
           overflow_counter = RESET;
           state            = NO_CAR;
-        } /*
-         read_pcnt();
-         Serial.print(pulse_counter);
-         Serial.print("\t");
-         Serial.print(overflow_counter);
-         Serial.print("\n"); */
-
+        }
         break;
 
       default:

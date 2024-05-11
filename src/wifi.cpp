@@ -22,6 +22,10 @@
 
 /*****************************    Defines    *******************************/
 
+#define RESET 0
+#define FALSE 0
+#define TRUE  1
+
 /*****************************   Constants   *******************************/
 
 /*****************************   Variables   *******************************/
@@ -66,7 +70,7 @@ void api_task(void *pvParameters) {
 
   while (1) {
     if (WiFi.status() == WL_CONNECTED) {
-      uint8_t traffic_light_id, send = 0;
+      uint8_t traffic_light_id, send = FALSE;
 
       if (xQueueReceive(xCarQueue, &traffic_light_id, (TickType_t)TICKS_WAIT) ==
           pdPASS) {
@@ -76,15 +80,15 @@ void api_task(void *pvParameters) {
 
         if (traffic_light_id == 1) {
           if (second == 1) {
-            send   = 1;
-            second = 0;
+            send   = TRUE;
+            second = RESET;
           }
         } else {
-          send     = 1;
-          velocity = 0;
+          send     = TRUE;
+          velocity = RESET;
         }
 
-        if (send == 1) {
+        if (send == TRUE) {
 
           const String server = "http://192.168.171.208:3000";
 
@@ -102,32 +106,32 @@ void api_task(void *pvParameters) {
 
           xSemaphoreGive(xCarSemaphore);
         }
+      }
 
-        if (xQueueReceive(xTrafficLightQueue, &traffic_light_id,
-                          (TickType_t)TICKS_WAIT) == pdPASS) {
-          xSemaphoreTake(xTrafficLightSemaphore, (TickType_t)TICKS_WAIT);
+      if (xQueueReceive(xTrafficLightQueue, &traffic_light_id,
+                        (TickType_t)TICKS_WAIT) == pdPASS) {
+        xSemaphoreTake(xTrafficLightSemaphore, (TickType_t)TICKS_WAIT);
 
-          HTTPClient   http;
+        HTTPClient   http;
 
-          const String traffic_light0_url = traffic_light0.get_url();
+        const String traffic_light0_url = traffic_light0.get_url();
 
-          http.begin(traffic_light0_url);
-          http.POST("");
+        http.begin(traffic_light0_url);
+        http.POST("");
 
-          const String traffic_light1_url = traffic_light1.get_url();
+        const String traffic_light1_url = traffic_light1.get_url();
 
-          http.begin(traffic_light1_url);
-          http.POST("");
+        http.begin(traffic_light1_url);
+        http.POST("");
 
-          const String traffic_light2_url = traffic_light2.get_url();
+        const String traffic_light2_url = traffic_light2.get_url();
 
-          http.begin(traffic_light2_url);
-          http.POST("");
+        http.begin(traffic_light2_url);
+        http.POST("");
 
-          http.end();
+        http.end();
 
-          xSemaphoreGive(xTrafficLightSemaphore);
-        }
+        xSemaphoreGive(xTrafficLightSemaphore);
       }
     }
   }
