@@ -38,19 +38,28 @@
 #define RESET            0
 #define CAR              1
 
-#define PCNT_H_LIM_VAL   920
+#define PCNT_H_LIM_VAL   920 / 2
+#define PCNT_H_LIM_VAL_2 260 / 2
+#define PCNT_H_LIM_VAL_3 920 / 2
+#define PCNT_H_LIM_VAL_4 260 / 2
 #define PCNT_FILTER_VAL  100
-#define TASK_DELAY       100
+#define TASK_DELAY       50
 #define OVERFLOW_LIMIT   10
 #define NO_FLAGS         0
+
+#define DISTANCE         0.18
 
 /*****************************   Constants   *******************************/
 
 /*****************************   Variables   *******************************/
 
-uint8_t PCNTModule::object_count = RESET;
+uint8_t        PCNTModule::object_count = RESET;
 
-/*****************************    Objects    *******************************/
+struct timeval system_time;
+float          time_pre, time_now;
+uint8_t        first = 0, second = 0;
+
+/*****************************    Objects *******************************/
 
 PCNTModule pcnt0, pcnt1, pcnt2, pcnt3;
 
@@ -90,7 +99,7 @@ void PCNTModule::init_pcnt() {
 
   pcnt_config.pulse_gpio_num = input_pin;
   pcnt_config.pos_mode       = PCNT_COUNT_INC;
-  pcnt_config.counter_h_lim  = PCNT_H_LIM_VAL;
+  pcnt_config.counter_h_lim  = high_limit;
   pcnt_config.unit           = pcnt_unit;
   pcnt_config.channel        = PCNT_CHANNEL_0;
   pcnt_unit_config(&pcnt_config);
@@ -102,7 +111,7 @@ void PCNTModule::init_pcnt() {
   pcnt_isr_handler_add(pcnt_unit, &PCNTModule::static_counter_overflow, this);
   pcnt_intr_enable(pcnt_unit);
 
-  pcnt_set_filter_value(pcnt_unit, PCNT_FILTER_VAL);
+  pcnt_set_filter_value(pcnt_unit, filter_value);
   pcnt_filter_enable(pcnt_unit);
 
   pcnt_counter_pause(pcnt_unit);
@@ -150,10 +159,22 @@ void PCNTModule::pcnt_task() {
             case PCNT_UNIT_2: // SEN3
               traffic_light_id = traffic_light1.get_id();
               traffic_light1.increment_queue();
+              if (first == 1) {
+                gettimeofday(&system_time, NULL);
+                time_now = (float)system_time.tv_sec * 1000000L +
+                           (float)system_time.tv_usec;
+                velocity = (DISTANCE / ((time_now - time_pre) / 1000000)) * 3.6;
+                first    = 0;
+                second   = 1;
+              }
               break;
             case PCNT_UNIT_3: // SEN4
               traffic_light_id = traffic_light1.get_id();
               traffic_light1.increment_queue();
+              gettimeofday(&system_time, NULL);
+              time_pre = (float)system_time.tv_sec * 1000000L +
+                         (float)system_time.tv_usec;
+              first = 1;
               break;
             default:
               traffic_light_id = 0;
@@ -184,12 +205,12 @@ void PCNTModule::pcnt_task() {
         } else {
           overflow_counter = RESET;
           state            = NO_CAR;
-        }
-        /*        read_pcnt();
-                Serial.print(pulse_counter);
-                Serial.print("\t");
-                Serial.print(overflow_counter);
-                Serial.print("\n"); */
+        } /*
+         read_pcnt();
+         Serial.print(pulse_counter);
+         Serial.print("\t");
+         Serial.print(overflow_counter);
+         Serial.print("\n"); */
 
         break;
 
@@ -206,11 +227,11 @@ void setup_pcnt() {
 
   pcnt0.init(PCNT_UNIT_0, INPUT_PIN_0, PCNT_H_LIM_VAL, PCNT_FILTER_VAL,
              TASK_DELAY, OVERFLOW_LIMIT);
-  pcnt1.init(PCNT_UNIT_1, INPUT_PIN_1, PCNT_H_LIM_VAL, PCNT_FILTER_VAL,
+  pcnt1.init(PCNT_UNIT_1, INPUT_PIN_1, PCNT_H_LIM_VAL_2, PCNT_FILTER_VAL,
              TASK_DELAY, OVERFLOW_LIMIT);
-  pcnt2.init(PCNT_UNIT_2, INPUT_PIN_2, PCNT_H_LIM_VAL, PCNT_FILTER_VAL,
+  pcnt2.init(PCNT_UNIT_2, INPUT_PIN_2, PCNT_H_LIM_VAL_3, PCNT_FILTER_VAL,
              TASK_DELAY, OVERFLOW_LIMIT);
-  pcnt3.init(PCNT_UNIT_3, INPUT_PIN_3, PCNT_H_LIM_VAL, PCNT_FILTER_VAL,
+  pcnt3.init(PCNT_UNIT_3, INPUT_PIN_3, PCNT_H_LIM_VAL_4, PCNT_FILTER_VAL,
              TASK_DELAY, OVERFLOW_LIMIT);
 }
 

@@ -49,7 +49,7 @@ impl Api {
 #[derive(Object)]
 struct Car {
     car_id: i64,
-    velocity: i64,
+    velocity: f64,
     clock: String,
     date_id: i64,
     car_type_id: i64,
@@ -106,7 +106,7 @@ impl Api {
     /// ```
     async fn vehicle_retrieve(&self) -> Result<Json<Vec<Car>>> {
         let mut stream =
-            sqlx::query_as::<_, (i64, i64, time::Time, i64, i64, i64)>("SELECT * FROM cars")
+            sqlx::query_as::<_, (i64, f64, time::Time, i64, i64, i64)>("SELECT * FROM cars")
                 .fetch(&*self.db);
         let mut results = Vec::new();
         while let Some(res) = stream.next().await {
