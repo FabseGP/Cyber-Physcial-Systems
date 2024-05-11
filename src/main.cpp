@@ -58,10 +58,8 @@ void setup() {
   setup_pcnt();
   setup_traffic_lights();
   connect_wifi("fabsewifi", "fabseman");
-  // connect_eduroam("eduroam", "CHANGE_ME",
-  //      "CHANGE_ME");
-
-  TaskHandle_t task_0, task_1, task_2, task_3, task_4, task_5;
+  // connect_eduroam("eduroam", "Phosphate6(Earthly(Footgear",
+  //   "fapet22@student.sdu.dk");
 
   xCarQueue              = xQueueCreate(QUEUE_SIZE, sizeof(uint8_t));
   xCarSemaphore          = xSemaphoreCreateBinary();
@@ -69,21 +67,15 @@ void setup() {
   xTrafficLightQueue     = xQueueCreate(QUEUE_SIZE, sizeof(uint8_t));
   xTrafficLightSemaphore = xSemaphoreCreateBinary();
 
-  xTaskCreate(pcnt0_task, "pcnt0_task", LARGE_STACK, &pcnt0, HIGH_PRIO,
-              &task_0);
-  xTaskCreate(pcnt1_task, "pcnt1_task", LARGE_STACK, &pcnt1, HIGH_PRIO,
-              &task_1);
-  xTaskCreate(pcnt2_task, "pcnt2_task", LARGE_STACK, &pcnt2, HIGH_PRIO,
-              &task_2);
-  xTaskCreate(pcnt3_task, "pcnt3_task", LARGE_STACK, &pcnt3, HIGH_PRIO,
-              &task_3);
-  xTaskCreate(api_task, "api_task", LARGE_STACK, NULL, MED_PRIO, &task_4);
+  xTaskCreate(pcnt0_task, "pcnt0_task", LARGE_STACK, &pcnt0, HIGH_PRIO, NULL);
+  xTaskCreate(pcnt1_task, "pcnt1_task", LARGE_STACK, &pcnt1, HIGH_PRIO, NULL);
+  xTaskCreate(pcnt2_task, "pcnt2_task", LARGE_STACK, &pcnt2, HIGH_PRIO, NULL);
+  xTaskCreate(pcnt3_task, "pcnt3_task", LARGE_STACK, &pcnt3, HIGH_PRIO, NULL);
+  xTaskCreate(api_task, "api_task", LARGE_STACK, NULL, MED_PRIO, NULL);
 
   // if not LOW_PRIO, the PCNT-counters doesn't work + no
   // api-transfer
-  //  xTaskCreate(traffic_cycle, "cycle_task", LARGE_STACK,
-  //  NULL, LOW_PRIO,
-  //            &task_5);
+  xTaskCreate(traffic_cycle, "cycle_task", LARGE_STACK, NULL, LOW_PRIO, NULL);
 
   xSemaphoreGive(xCarSemaphore);
   xSemaphoreGive(xTrafficLightSemaphore);

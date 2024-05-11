@@ -26,6 +26,8 @@
 
 /*****************************   Variables   *******************************/
 
+float velocity;
+
 /*****************************    Objects    *******************************/
 
 QueueHandle_t     xCarQueue, xTrafficLightQueue;
@@ -53,6 +55,7 @@ void connect_eduroam(String ssid, String password, String identity) {
              password);
 
   while (WiFi.status() != WL_CONNECTED) {
+    Serial.println("wait");
   }
 }
 
@@ -63,30 +66,42 @@ void api_task(void *pvParameters) {
 
   while (1) {
     if (WiFi.status() == WL_CONNECTED) {
-      uint8_t traffic_light_id = 1;
+      uint8_t traffic_light_id, send = 0;
 
       if (xQueueReceive(xCarQueue, &traffic_light_id, (TickType_t)TICKS_WAIT) ==
           pdPASS) {
         xSemaphoreTake(xCarSemaphore, (TickType_t)TICKS_WAIT);
 
-        HTTPClient   http;
+        HTTPClient http;
 
-        const String server  = "http://192.168.171.208:3000";
+        if (traffic_light_id == 1) {
+          if (second == 1) {
+            send   = 1;
+            second = 0;
+          }
+        } else {
+          send     = 1;
+          velocity = 0;
+        }
 
-        const String car_url = server + "/vehicles/insert" +
-                               "?car_id=" + car_counter + "&velocity=" + 2 +
-                               "&date_id=" + 1 + "&car_type_id=" + 2 +
-                               "&traffic_light_id=" + traffic_light_id;
+        if (send == 1) {
 
-        http.begin(car_url);
-        http.POST("");
+          const String server = "http://192.168.171.208:3000";
 
-        car_counter++;
+          const String car_url =
+              server + "/vehicles/insert" + "?car_id=" + car_counter +
+              "&velocity=" + velocity + "&date_id=" + 1 + "&car_type_id=" + 2 +
+              "&traffic_light_id=" + traffic_light_id;
 
-        http.end();
+          http.begin(car_url);
+          http.POST("");
 
-        xSemaphoreGive(xCarSemaphore);
-        Serial.println("sent");
+          car_counter++;
+
+          http.end();
+
+          xSemaphoreGive(xCarSemaphore);
+        }
 
         if (xQueueReceive(xTrafficLightQueue, &traffic_light_id,
                           (TickType_t)TICKS_WAIT) == pdPASS) {

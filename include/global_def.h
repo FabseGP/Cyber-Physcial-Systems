@@ -30,20 +30,21 @@
 
 #define TICKS_WAIT 10
 
-extern QueueHandle_t     xCarQueue, xTrafficLightQueue;
-extern SemaphoreHandle_t xCarSemaphore, xTrafficLightSemaphore;
-
 /*****************************   Constants   *******************************/
 
 /*****************************   Variables   *******************************/
 
 extern uint16_t car_counter;
-extern uint8_t  timer_change, traffic_state;
+extern uint8_t  timer_change, traffic_state, second;
+extern float    velocity;
 
 /*****************************    Objects    *******************************/
 
-extern PCNTModule    pcnt0, pcnt1, pcnt2, pcnt3;
-extern TrafficLights traffic_light0, traffic_light1, traffic_light2;
+extern PCNTModule        pcnt0, pcnt1, pcnt2, pcnt3;
+extern TrafficLights     traffic_light0, traffic_light1, traffic_light2;
+
+extern QueueHandle_t     xCarQueue, xTrafficLightQueue;
+extern SemaphoreHandle_t xCarSemaphore, xTrafficLightSemaphore;
 
 /*****************************   Functions   *******************************/
 

@@ -105,7 +105,7 @@ void traffic_cycle(void *pvParameters) {
 
     traffic_algorithm();
 
-    static uint8_t traffic_state = WE_READY;
+    static uint8_t traffic_state = TL_IDLE;
 
     uint8_t        timer         = traffic_light0.get_timer();
 
@@ -120,6 +120,7 @@ void traffic_cycle(void *pvParameters) {
           traffic_light0.set_timer(IDLE_TIME);
           traffic_light1.set_timer(IDLE_TIME);
           traffic_light2.set_timer(IDLE_TIME);
+          traffic_state = WE_READY;
           break;
 
         case WE_READY:
