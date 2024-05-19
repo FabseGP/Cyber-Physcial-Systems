@@ -37,7 +37,7 @@
 
 #define EMPTY_QUEUE     0
 #define RESET           0
-#define CARS_PER_SECOND 1
+#define SECONDS_PER_CAR 1
 
 /*****************************   Constants   *******************************/
 
@@ -66,15 +66,30 @@ void TrafficLights::init(uint8_t id, String mode, String placement, String area,
   green_led        = green_pin;
   rate             = car_rate;
   timer            = RESET;
+  duration         = rate;
 }
 
 uint8_t TrafficLights::get_id() { return traffic_light_id; }
 
-String  TrafficLights::get_state() { return state; }
-
 uint8_t TrafficLights::get_queue_size() { return queue_size; }
 
-void    TrafficLights::decrement_timer(uint8_t subtract) {
+uint8_t TrafficLights::get_timer() { return timer; }
+
+uint8_t TrafficLights::get_count() { return object_count; }
+
+String  TrafficLights::get_state() { return state; }
+
+String  TrafficLights::get_url() {
+  return String("http://192.168.0.200:3000/trafficlights/insert") +
+         "?traffic_light_id=" + traffic_light_id +
+         "&state=" + urlEncode(state) + "&direction=" + urlEncode(direction) +
+         "&location=" + urlEncode(location) + "&queue_size=" + queue_size;
+  ;
+}
+
+void TrafficLights::increment_timer(uint8_t addition) { timer += addition; }
+
+void TrafficLights::decrement_timer(uint8_t subtract) {
   if (timer <= subtract) {
     if (timer >= 1) {
       --timer;
@@ -86,35 +101,22 @@ void    TrafficLights::decrement_timer(uint8_t subtract) {
   }
 }
 
-void    TrafficLights::increment_timer(uint8_t addition) { timer += addition; }
+void TrafficLights::increment_queue() { ++queue_size; }
 
-uint8_t TrafficLights::get_timer() { return timer; }
-
-void    TrafficLights::set_timer(uint8_t seconds) { timer = seconds; }
-
-void    TrafficLights::increment_queue() { ++queue_size; }
-
-void    TrafficLights::decrement_queue() {
-  if (queue_size <= rate) {
+void TrafficLights::decrement_queue() {
+  if (duration == 0) {
     if (queue_size >= 1) {
       --queue_size;
     } else {
       queue_size = RESET;
     }
+    duration = rate;
   } else {
-    queue_size -= rate;
+    --duration;
   }
 }
 
-uint8_t TrafficLights::get_count() { return object_count; }
-
-String  TrafficLights::get_url() {
-  return String("http://192.168.0.200:3000/trafficlights/insert") +
-         "?traffic_light_id=" + traffic_light_id +
-         "&state=" + urlEncode(state) + "&direction=" + urlEncode(direction) +
-         "&location=" + urlEncode(location) + "&queue_size=" + queue_size;
-  ;
-}
+void TrafficLights::set_timer(uint8_t seconds) { timer = seconds; }
 
 void TrafficLights::set_red() {
   digitalWrite(red_led, HIGH);
@@ -148,13 +150,13 @@ void setup_traffic_lights() {
 
   traffic_light0.init(TRAFFIC_LIGHT_E, "Red", "East",
                       "Faaborgvej 23, 5610 Assens", EMPTY_QUEUE,
-                      CARS_PER_SECOND, RED_WE, YELLOW_WE, GREEN_WE);
+                      SECONDS_PER_CAR, RED_WE, YELLOW_WE, GREEN_WE);
   traffic_light1.init(TRAFFIC_LIGHT_W, "Red", "West",
                       "Faaborgvej 24, 5610 Assens", EMPTY_QUEUE,
-                      CARS_PER_SECOND, RED_WE, YELLOW_WE, GREEN_WE);
+                      SECONDS_PER_CAR, RED_WE, YELLOW_WE, GREEN_WE);
   traffic_light2.init(TRAFFIC_LIGHT_N, "Red", "North",
                       "Faaborgvej 25, 5610 Assens", EMPTY_QUEUE,
-                      CARS_PER_SECOND, RED_NS, YELLOW_NS, GREEN_NS);
+                      SECONDS_PER_CAR, RED_NS, YELLOW_NS, GREEN_NS);
 }
 
 /****************************** End Of Module *******************************/

@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "Fabseapi",
+    "title": "TrafficAPI",
     "version": "1.0.0"
   },
   "servers": [
@@ -137,26 +137,6 @@
             "explode": true
           },
           {
-            "name": "direction",
-            "schema": {
-              "type": "string"
-            },
-            "in": "query",
-            "required": false,
-            "deprecated": false,
-            "explode": true
-          },
-          {
-            "name": "location",
-            "schema": {
-              "type": "string"
-            },
-            "in": "query",
-            "required": false,
-            "deprecated": false,
-            "explode": true
-          },
-          {
             "name": "queue_size",
             "schema": {
               "type": "string"
@@ -218,8 +198,8 @@
             "format": "int64"
           },
           "velocity": {
-            "type": "integer",
-            "format": "int64"
+            "type": "number",
+            "format": "double"
           },
           "clock": {
             "type": "string"

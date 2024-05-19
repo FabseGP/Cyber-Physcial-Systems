@@ -68,70 +68,66 @@ void api_task(void *pvParameters) {
    *   Function : See module specification (.h-file)
    *****************************************************************************/
 
+  HTTPClient http;
+
   while (1) {
     if (WiFi.status() == WL_CONNECTED) {
       uint8_t traffic_light_id, send = FALSE;
 
-      if (xQueueReceive(xCarQueue, &traffic_light_id, (TickType_t)TICKS_WAIT) ==
-          pdPASS) {
-        xSemaphoreTake(xCarSemaphore, (TickType_t)TICKS_WAIT);
+      if (xSemaphoreTake(xCarSemaphore, (TickType_t)10) == pdTRUE) {
+        if (xQueueReceive(xCarQueue, &traffic_light_id,
+                          (TickType_t)TICKS_WAIT) == pdPASS) {
 
-        HTTPClient http;
-
-        if (traffic_light_id == 1) {
-          if (second == 1) {
-            send   = TRUE;
-            second = RESET;
+          if (traffic_light_id == 1) {
+            if (second == 1) {
+              send   = TRUE;
+              second = RESET;
+            }
+          } else {
+            send     = TRUE;
+            velocity = RESET;
           }
-        } else {
-          send     = TRUE;
-          velocity = RESET;
-        }
 
-        if (send == TRUE) {
+          if (send == TRUE) {
 
-          const String server = "http://192.168.171.208:3000";
+            const String server = "http://192.168.171.208:3000";
 
-          const String car_url =
-              server + "/vehicles/insert" + "?car_id=" + car_counter +
-              "&velocity=" + velocity + "&date_id=" + 1 + "&car_type_id=" + 2 +
-              "&traffic_light_id=" + traffic_light_id;
+            const String car_url =
+                server + "/vehicles/insert" + "?car_id=" + car_counter +
+                "&velocity=" + velocity + "&date_id=" + 1 +
+                "&car_type_id=" + 2 + "&traffic_light_id=" + traffic_light_id;
 
-          http.begin(car_url);
-          http.POST("");
+            http.begin(car_url);
+            http.POST("");
 
-          car_counter++;
+            car_counter++;
 
-          http.end();
-
-          xSemaphoreGive(xCarSemaphore);
+            http.end();
+          }
         }
       }
 
-      if (xQueueReceive(xTrafficLightQueue, &traffic_light_id,
-                        (TickType_t)TICKS_WAIT) == pdPASS) {
-        xSemaphoreTake(xTrafficLightSemaphore, (TickType_t)TICKS_WAIT);
+      if (xSemaphoreTake(xTrafficLightSemaphore, (TickType_t)10) == pdTRUE) {
+        if (xQueueReceive(xTrafficLightQueue, &traffic_light_id,
+                          (TickType_t)TICKS_WAIT) == pdPASS) {
 
-        HTTPClient   http;
+          const String traffic_light0_url = traffic_light0.get_url();
 
-        const String traffic_light0_url = traffic_light0.get_url();
+          http.begin(traffic_light0_url);
+          http.POST("");
 
-        http.begin(traffic_light0_url);
-        http.POST("");
+          const String traffic_light1_url = traffic_light1.get_url();
 
-        const String traffic_light1_url = traffic_light1.get_url();
+          http.begin(traffic_light1_url);
+          http.POST("");
 
-        http.begin(traffic_light1_url);
-        http.POST("");
+          const String traffic_light2_url = traffic_light2.get_url();
 
-        const String traffic_light2_url = traffic_light2.get_url();
+          http.begin(traffic_light2_url);
+          http.POST("");
 
-        http.begin(traffic_light2_url);
-        http.POST("");
-
-        http.end();
-
-        xSemaphoreGive(xTrafficLightSemaphore);
+          http.end();
+        }
       }
     }
   }

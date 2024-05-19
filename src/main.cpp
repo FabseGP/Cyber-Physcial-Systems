@@ -37,7 +37,7 @@
 #define LARGE_STACK 2024
 
 #define BAUDRATE    921600
-#define QUEUE_SIZE  10
+#define QUEUE_SIZE  20
 
 #define RESET       0
 
@@ -59,14 +59,15 @@ void setup() {
   setup_pcnt();
   setup_traffic_lights();
   connect_wifi("fabsewifi", "fabseman");
-  // connect_eduroam("eduroam", "Phosphate6(Earthly(Footgear",
-  //   "fapet22@student.sdu.dk");
 
   xCarQueue              = xQueueCreate(QUEUE_SIZE, sizeof(uint8_t));
   xCarSemaphore          = xSemaphoreCreateBinary();
 
   xTrafficLightQueue     = xQueueCreate(QUEUE_SIZE, sizeof(uint8_t));
   xTrafficLightSemaphore = xSemaphoreCreateBinary();
+
+  xSemaphoreGive(xCarSemaphore);
+  xSemaphoreGive(xTrafficLightSemaphore);
 
   xTaskCreate(pcnt0_task, "pcnt0_task", LARGE_STACK, &pcnt0, HIGH_PRIO, NULL);
   xTaskCreate(pcnt1_task, "pcnt1_task", LARGE_STACK, &pcnt1, HIGH_PRIO, NULL);
@@ -77,9 +78,6 @@ void setup() {
   // if not LOW_PRIO, the PCNT-counters doesn't work + no
   // api-transfer
   xTaskCreate(traffic_cycle, "cycle_task", LARGE_STACK, NULL, LOW_PRIO, NULL);
-
-  xSemaphoreGive(xCarSemaphore);
-  xSemaphoreGive(xTrafficLightSemaphore);
 }
 
 void loop() {}

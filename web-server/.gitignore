@@ -2,3 +2,6 @@ target
 Cargo.lock
 .env
 .sqlx
+perf.data
+perf.data.old
+flamegraph.svg
