@@ -53,6 +53,48 @@
 
 /*****************************   Functions   *******************************/
 
+void update_queue(String &we_state, String &ns_state) {
+
+  if (we_state == "Green" || we_state == "Yellow") {
+    traffic_light0.decrement_queue();
+    traffic_light1.decrement_queue();
+  } else if (ns_state == "Green" || ns_state == "Yellow") {
+    traffic_light2.decrement_queue();
+  }
+}
+
+void update_timer(String &we_state, String &ns_state) {
+
+  uint8_t we_queue_size_1 = traffic_light0.get_queue_size(),
+          we_queue_size_2 = traffic_light1.get_queue_size(),
+          ns_queue_size   = traffic_light2.get_queue_size();
+
+  if (((we_queue_size_1 > QUEUE_LIMIT || we_queue_size_2 > QUEUE_LIMIT) &&
+       we_state == "Green") ||
+      (ns_queue_size > QUEUE_LIMIT && ns_state == "Green")) {
+    traffic_light0.increment_timer(ONE_SECOND);
+    traffic_light2.increment_timer(ONE_SECOND);
+  } else if (((we_queue_size_1 > QUEUE_LIMIT ||
+               we_queue_size_2 > QUEUE_LIMIT) &&
+              we_state == "Red") ||
+             (ns_queue_size > QUEUE_LIMIT && ns_state == "Red")) {
+    traffic_light0.decrement_timer(ONE_SECOND);
+    traffic_light2.decrement_timer(ONE_SECOND);
+  }
+
+  if ((we_queue_size_1 >= MINIMUM_QUEUE || we_queue_size_2 >= MINIMUM_QUEUE) &&
+      (we_state != "Green" || we_state != "RedYellow") &&
+      ns_queue_size == EMPTY) {
+    traffic_light0.set_timer(RESET);
+    traffic_light2.set_timer(RESET);
+  } else if (ns_queue_size >= MINIMUM_QUEUE &&
+             (ns_state != "Green" || ns_state != "RedYellow") &&
+             (we_queue_size_1 == EMPTY && we_queue_size_2 == EMPTY)) {
+    traffic_light0.set_timer(RESET);
+    traffic_light2.set_timer(RESET);
+  }
+}
+
 void traffic_algorithm() {
   if (timer_change == SECOND_PASSED) {
 
@@ -62,46 +104,11 @@ void traffic_algorithm() {
     String we_state = traffic_light0.get_state(),
            ns_state = traffic_light2.get_state();
 
-    if (we_state == "Green" || we_state == "Yellow") {
-      traffic_light0.decrement_queue();
-      traffic_light1.decrement_queue();
-    } else if (ns_state == "Green" || ns_state == "Yellow") {
-      traffic_light2.decrement_queue();
-    }
-
-    uint8_t we_queue_size_1 = traffic_light0.get_queue_size(),
-            we_queue_size_2 = traffic_light1.get_queue_size(),
-            ns_queue_size   = traffic_light2.get_queue_size();
-
-    if (((we_queue_size_1 > QUEUE_LIMIT || we_queue_size_2 > QUEUE_LIMIT) &&
-         we_state == "Green") ||
-        (ns_queue_size > QUEUE_LIMIT && ns_state == "Green")) {
-      traffic_light0.increment_timer(ONE_SECOND);
-      traffic_light2.increment_timer(ONE_SECOND);
-    } else if (((we_queue_size_1 > QUEUE_LIMIT ||
-                 we_queue_size_2 > QUEUE_LIMIT) &&
-                we_state == "Red") ||
-               (ns_queue_size > QUEUE_LIMIT && ns_state == "Red")) {
-      traffic_light0.decrement_timer(ONE_SECOND);
-      traffic_light2.decrement_timer(ONE_SECOND);
-    }
-
-    if ((we_queue_size_1 >= MINIMUM_QUEUE ||
-         we_queue_size_2 >= MINIMUM_QUEUE) &&
-        (we_state != "Green" || we_state != "RedYellow") &&
-        ns_queue_size == EMPTY) {
-      traffic_light0.set_timer(RESET);
-      traffic_light2.set_timer(RESET);
-    } else if (ns_queue_size >= MINIMUM_QUEUE &&
-               (ns_state != "Green" || ns_state != "RedYellow") &&
-               (we_queue_size_1 == EMPTY && we_queue_size_2 == EMPTY)) {
-      traffic_light0.set_timer(RESET);
-      traffic_light2.set_timer(RESET);
-    }
+    update_queue(we_state, ns_state);
+    update_timer(we_state, ns_state);
 
     uint8_t traffic_light0_id = traffic_light0.get_id();
 
-    xSemaphoreTake(xTrafficLightSemaphore, (TickType_t)TICKS_WAIT);
     xQueueSend(xTrafficLightQueue, &traffic_light0_id, (TickType_t)TICKS_WAIT);
     xSemaphoreGive(xTrafficLightSemaphore);
 

@@ -35,7 +35,7 @@
 class TrafficLights {
   private:
     static uint8_t object_count;
-    uint8_t        traffic_light_id, queue_size, timer, rate;
+    uint8_t        traffic_light_id, queue_size, timer, rate, duration;
     String         state, direction, location;
     gpio_num_t     red_led, yellow_led, green_led;
 
@@ -44,17 +44,21 @@ class TrafficLights {
     void           init(uint8_t id, String mode, String placement, String area,
                         uint8_t queue, uint8_t car_rate, gpio_num_t red_pin,
                         gpio_num_t yellow_pin, gpio_num_t green_pin);
+
+    static uint8_t get_count();
     uint8_t        get_id();
-    String         get_state();
+    uint8_t        get_timer();
     uint8_t        get_queue_size();
+
+    String         get_state();
+    String         get_url();
+
     void           increment_timer(uint8_t subtract);
     void           decrement_timer(uint8_t subtract);
-    uint8_t        get_timer();
     void           increment_queue();
     void           decrement_queue();
+
     void           set_timer(uint8_t seconds);
-    static uint8_t get_count();
-    String         get_url();
     void           set_red();
     void           set_yellow();
     void           set_green();

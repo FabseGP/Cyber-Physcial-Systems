@@ -78,9 +78,6 @@ void PCNTModule::static_counter_overflow(void *arg) {
 
 void PCNTModule::init(pcnt_unit_t unit, uint8_t pin, int16_t limit,
                       uint16_t filter, uint8_t delay, uint8_t overflow) {
-  /*****************************************************************************
-   *   Function : See module specification (.h-file)
-   *****************************************************************************/
 
   pcnt_unit        = unit;
   input_pin        = pin;
@@ -93,6 +90,7 @@ void PCNTModule::init(pcnt_unit_t unit, uint8_t pin, int16_t limit,
   state            = NO_CAR;
   user_isr_handle  = NULL;
   pcnt_config      = {};
+
   init_pcnt();
 }
 
@@ -150,7 +148,7 @@ void PCNTModule::pcnt_task() {
         if (overflow_counter > overflow_limit) {
           state = CAR;
           uint8_t traffic_light_id;
-          xSemaphoreTake(xTrafficLightSemaphore, (TickType_t)TICKS_WAIT);
+
           switch (pcnt_unit) {
             case PCNT_UNIT_0: // SEN1
               traffic_light_id = traffic_light0.get_id();
@@ -187,7 +185,6 @@ void PCNTModule::pcnt_task() {
           }
           xSemaphoreGive(xTrafficLightSemaphore);
 
-          xSemaphoreTake(xCarSemaphore, (TickType_t)TICKS_WAIT);
           xQueueSend(xCarQueue, &traffic_light_id, (TickType_t)TICKS_WAIT);
           xSemaphoreGive(xCarSemaphore);
           overflow_counter = RESET;

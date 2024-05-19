@@ -52,7 +52,7 @@ void api_task(void *pvParameters);
 /*****************************************************************************
  *   Input    : -
  *   Output   : -
- *   Function : Tests connection to web-server by sending dummy data
+ *   Function : Sends data to the API
  ******************************************************************************/
 
 /****************************** End Of Module *******************************/

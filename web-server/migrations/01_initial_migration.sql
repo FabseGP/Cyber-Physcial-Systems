@@ -51,9 +51,9 @@ INSERT INTO car_type VALUES
 	('3', '5', "Car");
     
 INSERT INTO traffic_light VALUES
-	('0', "Green", "North", "Nyborgvej, 5530 Odense", '0'),
-	('1', "Red", "South", "Damgårdsvej, 5530 Odense", '7'),
-	('2', "Yellow", "West", "Marksvej, 5530 Odense", '7');
+	('0', "Green", "North", "Nyborgvej 23, 5530 Odense", '0'),
+	('1', "Red", "South", "Damgårdsvej 40, 5530 Odense", '7'),
+	('2', "Yellow", "West", "Marksvej 10, 5530 Odense", '7');
 
 INSERT INTO cars VALUES
 	('1', "50.0", '12:17:00.2020', '1', '2', '0'),
