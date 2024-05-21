@@ -86,13 +86,12 @@ void update_timer(String &we_state, String &ns_state) {
   }
 
   if ((we_queue_size_1 >= MINIMUM_QUEUE || we_queue_size_2 >= MINIMUM_QUEUE) &&
-      we_state != "Green" && ns_queue_size == EMPTY &&
-      (ns_state == "Green" || ns_state == "RedYellow")) {
+      we_state != "Green" && ns_queue_size == EMPTY && ns_state == "Green") {
     traffic_light0.set_timer(RESET);
     traffic_light2.set_timer(RESET);
   } else if (ns_queue_size >= MINIMUM_QUEUE && ns_state != "Green" &&
              (we_queue_size_1 == EMPTY && we_queue_size_2 == EMPTY) &&
-             (we_state == "Green" || we_state == "RedYellow")) {
+             we_state == "Green") {
     traffic_light0.set_timer(RESET);
     traffic_light2.set_timer(RESET);
   }

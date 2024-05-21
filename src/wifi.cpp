@@ -30,7 +30,7 @@
 
 /*****************************   Variables   *******************************/
 
-float velocity;
+double velocity;
 
 /*****************************    Objects    *******************************/
 
@@ -69,7 +69,7 @@ void api_task(void *pvParameters) {
    *****************************************************************************/
 
   uint8_t      traffic_light_id, send = FALSE;
-  const String server = "http://192.168.207.208:3000";
+  const String server = "http://192.168.255.208:3000";
 
   HTTPClient   http;
 
@@ -79,18 +79,14 @@ void api_task(void *pvParameters) {
         while (xQueueReceive(xCarQueue, &traffic_light_id,
                              (TickType_t)TICKS_WAIT) == pdPASS) {
 
-          if (traffic_light_id == 1) {
-            if (second == 1) {
-              send   = TRUE;
-              second = RESET;
-            }
+          if (traffic_light_id == 1 && velocity_measured == TRUE) {
+            send              = TRUE;
+            velocity_measured = RESET;
           } else {
-            send     = TRUE;
             velocity = RESET;
           }
 
           if (send == TRUE) {
-
             const String car_url =
                 server + "/vehicles/insert" + "?car_id=" + car_counter +
                 "&velocity=" + velocity + "&date_id=" + 1 +
@@ -98,10 +94,10 @@ void api_task(void *pvParameters) {
 
             http.begin(car_url);
             http.POST("");
+            http.end();
 
             car_counter++;
-
-            http.end();
+            send = FALSE;
           }
         }
       }
