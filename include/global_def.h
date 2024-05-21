@@ -35,8 +35,8 @@
 /*****************************   Variables   *******************************/
 
 extern uint16_t car_counter;
-extern uint8_t  timer_change, traffic_state, second;
-extern float    velocity;
+extern uint8_t  timer_change, traffic_state, velocity_measured;
+extern double   velocity;
 
 /*****************************    Objects    *******************************/
 

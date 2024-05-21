@@ -34,7 +34,7 @@
 #define INPUT_PIN_2         9
 #define INPUT_PIN_3         21
 
-#define PCNT_H_LIM_VAL_1    445
+#define PCNT_H_LIM_VAL_1    458
 #define PCNT_H_LIM_VAL_2    158
 #define PCNT_FILTER_VAL_1   370
 #define PCNT_FILTER_VAL_2   970
@@ -43,7 +43,7 @@
 #define OVERFLOW_LIMIT      10
 #define NO_FLAGS            0
 
-#define DISTANCE_M          0.18
+#define DISTANCE_M          0.30
 #define VELOCITY_CONVERSION 3.6
 
 #define NO_CAR              0
@@ -55,14 +55,11 @@
 
 /*****************************   Constants   *******************************/
 
-/***************** || ns_state == "Yellow"************   Variables
- * *******************************/
+/*****************************  Variables  *******************************/
 
-uint8_t        PCNTModule::object_count = RESET;
-
-struct timeval system_time;
-float          time_pre, time_now;
-uint8_t        first, second;
+uint8_t PCNTModule::object_count = RESET, first = FALSE,
+        velocity_measured = FALSE;
+int64_t time_pre, time_now;
 
 /*****************************    Objects *******************************/
 
@@ -133,84 +130,75 @@ void PCNTModule::read_pcnt() {
 }
 
 void PCNTModule::pcnt_task() {
-  while (1) {
 
-    switch (state) {
-      case NO_CAR:
-        pcnt_counter_pause(pcnt_unit);
-        pcnt_counter_clear(pcnt_unit);
-        pcnt_counter_resume(pcnt_unit);
-        vTaskDelay(delay_timer / portTICK_PERIOD_MS);
+  switch (state) {
+    case NO_CAR:
+      pcnt_counter_pause(pcnt_unit);
+      pcnt_counter_clear(pcnt_unit);
+      pcnt_counter_resume(pcnt_unit);
+      vTaskDelay(delay_timer / portTICK_PERIOD_MS);
 
-        // if the frequency is higher than the targeted high_limit
-        // an overflow occurs; if the amount of overflows is higehr
-        // than the sat limit, a car has arrived
-        if (overflow_counter > overflow_limit) {
-          state = CAR;
-          uint8_t traffic_light_id;
+      // if the frequency is higher than the targeted high_limit
+      // an overflow occurs; if the amount of overflows is higehr
+      // than the sat limit, a car has arrived
+      if (overflow_counter > overflow_limit) {
+        state = CAR;
+        uint8_t traffic_light_id;
 
-          switch (pcnt_unit) {
-            case PCNT_UNIT_0: // SEN1
-              traffic_light_id = traffic_light0.get_id();
-              traffic_light0.increment_queue();
-              break;
-            case PCNT_UNIT_1: // SEN2
-              traffic_light_id = traffic_light2.get_id();
-              traffic_light2.increment_queue();
-              break;
-            case PCNT_UNIT_2: // SEN3
-              traffic_light_id = traffic_light1.get_id();
-              traffic_light1.increment_queue();
-              if (first == TRUE) {
-                gettimeofday(&system_time, NULL);
-                time_now = (float)system_time.tv_sec * 1000000L +
-                           (float)system_time.tv_usec;
-                velocity = (DISTANCE_M / ((time_now - time_pre) / 1000000)) *
-                           VELOCITY_CONVERSION;
-                first  = RESET;
-                second = TRUE;
-              }
-              break;
-            case PCNT_UNIT_3: // SEN4
-              traffic_light_id = traffic_light1.get_id();
-              traffic_light1.increment_queue();
-              gettimeofday(&system_time, NULL);
-              time_pre = (float)system_time.tv_sec * 1000000L +
-                         (float)system_time.tv_usec;
-              first = TRUE;
-              break;
-            default:
-              traffic_light_id = 0;
-              break;
-          }
-
-          xQueueSend(xCarQueue, &traffic_light_id, (TickType_t)TICKS_WAIT);
-          xSemaphoreGive(xCarSemaphore);
-          overflow_counter = RESET;
-        } else {
-          overflow_counter = RESET;
+        switch (pcnt_unit) {
+          case PCNT_UNIT_0: // SEN1
+            traffic_light_id = traffic_light0.get_id();
+            traffic_light0.increment_queue();
+            break;
+          case PCNT_UNIT_1: // SEN2
+            traffic_light_id = traffic_light2.get_id();
+            traffic_light2.increment_queue();
+            break;
+          case PCNT_UNIT_2: // SEN3
+            traffic_light_id = traffic_light1.get_id();
+            traffic_light1.increment_queue();
+            if (first == TRUE) {
+              time_now          = esp_timer_get_time();
+              double time_delta = (time_now - time_pre) / 1000000.0;
+              velocity = (DISTANCE_M / time_delta) * VELOCITY_CONVERSION;
+              first    = RESET;
+              velocity_measured = TRUE;
+            }
+            break;
+          case PCNT_UNIT_3: // SEN4
+            traffic_light_id = traffic_light1.get_id();
+            traffic_light1.increment_queue();
+            if (first == FALSE) {
+              time_pre = esp_timer_get_time();
+              first    = TRUE;
+            }
+            break;
+          default:
+            break;
         }
-        break;
 
-      case CAR:
-        pcnt_counter_pause(pcnt_unit);
-        pcnt_counter_clear(pcnt_unit);
-        pcnt_counter_resume(pcnt_unit);
-        vTaskDelay(delay_timer / portTICK_PERIOD_MS);
+        xQueueSend(xCarQueue, &traffic_light_id, (TickType_t)TICKS_WAIT);
+        xSemaphoreGive(xCarSemaphore);
+      }
+      overflow_counter = RESET;
+      break;
 
-        // if the overflow_count is less than the limit, the frequency of the
-        // signal is not what is expected for a car passing by
-        if (overflow_counter > overflow_limit) {
-          overflow_counter = RESET;
-        } else {
-          overflow_counter = RESET;
-          state            = NO_CAR;
-        }
-        break;
+    case CAR:
+      pcnt_counter_pause(pcnt_unit);
+      pcnt_counter_clear(pcnt_unit);
+      pcnt_counter_resume(pcnt_unit);
+      vTaskDelay(delay_timer / portTICK_PERIOD_MS);
 
-      default:
-        break;
-    }
+      // if the overflow_count is less than the limit, the frequency of the
+      // signal is not what is expected for a car passing by
+      if (overflow_counter < overflow_limit) {
+        state = NO_CAR;
+      }
+      overflow_counter = RESET;
+      break;
+
+    default:
+      break;
   }
 }
 
