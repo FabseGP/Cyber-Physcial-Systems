@@ -66,9 +66,6 @@ void setup() {
   xTrafficLightQueue     = xQueueCreate(QUEUE_SIZE, sizeof(uint8_t));
   xTrafficLightSemaphore = xSemaphoreCreateBinary();
 
-  xSemaphoreGive(xCarSemaphore);
-  xSemaphoreGive(xTrafficLightSemaphore);
-
   xTaskCreate(pcnt0_task, "pcnt0_task", LARGE_STACK, &pcnt0, HIGH_PRIO, NULL);
   xTaskCreate(pcnt1_task, "pcnt1_task", LARGE_STACK, &pcnt1, HIGH_PRIO, NULL);
   xTaskCreate(pcnt2_task, "pcnt2_task", LARGE_STACK, &pcnt2, HIGH_PRIO, NULL);
@@ -78,6 +75,9 @@ void setup() {
   // if not LOW_PRIO, the PCNT-counters doesn't work + no
   // api-transfer
   xTaskCreate(traffic_cycle, "cycle_task", LARGE_STACK, NULL, LOW_PRIO, NULL);
+
+  xSemaphoreGive(xCarSemaphore);
+  xSemaphoreGive(xTrafficLightSemaphore);
 }
 
 void loop() {}

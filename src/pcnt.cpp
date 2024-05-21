@@ -34,11 +34,11 @@
 #define INPUT_PIN_2         9
 #define INPUT_PIN_3         21
 
-#define PCNT_H_LIM_VAL      460
-#define PCNT_H_LIM_VAL_2    130
-#define PCNT_H_LIM_VAL_3    460
-#define PCNT_H_LIM_VAL_4    130
-#define PCNT_FILTER_VAL     100
+#define PCNT_H_LIM_VAL_1    445
+#define PCNT_H_LIM_VAL_2    158
+#define PCNT_FILTER_VAL_1   370
+#define PCNT_FILTER_VAL_2   970
+
 #define TASK_DELAY          50
 #define OVERFLOW_LIMIT      10
 #define NO_FLAGS            0
@@ -55,7 +55,8 @@
 
 /*****************************   Constants   *******************************/
 
-/*****************************   Variables   *******************************/
+/***************** || ns_state == "Yellow"************   Variables
+ * *******************************/
 
 uint8_t        PCNTModule::object_count = RESET;
 
@@ -78,7 +79,6 @@ void PCNTModule::static_counter_overflow(void *arg) {
 
 void PCNTModule::init(pcnt_unit_t unit, uint8_t pin, int16_t limit,
                       uint16_t filter, uint8_t delay, uint8_t overflow) {
-
   pcnt_unit        = unit;
   input_pin        = pin;
   high_limit       = limit;
@@ -183,7 +183,6 @@ void PCNTModule::pcnt_task() {
               traffic_light_id = 0;
               break;
           }
-          xSemaphoreGive(xTrafficLightSemaphore);
 
           xQueueSend(xCarQueue, &traffic_light_id, (TickType_t)TICKS_WAIT);
           xSemaphoreGive(xCarSemaphore);
@@ -220,13 +219,13 @@ void setup_pcnt() {
    *   Function : See module specification (.h-file)
    *****************************************************************************/
 
-  pcnt0.init(PCNT_UNIT_0, INPUT_PIN_0, PCNT_H_LIM_VAL, PCNT_FILTER_VAL,
+  pcnt0.init(PCNT_UNIT_0, INPUT_PIN_0, PCNT_H_LIM_VAL_1, PCNT_FILTER_VAL_1,
              TASK_DELAY, OVERFLOW_LIMIT);
-  pcnt1.init(PCNT_UNIT_1, INPUT_PIN_1, PCNT_H_LIM_VAL_2, PCNT_FILTER_VAL,
+  pcnt1.init(PCNT_UNIT_1, INPUT_PIN_1, PCNT_H_LIM_VAL_2, PCNT_FILTER_VAL_2,
              TASK_DELAY, OVERFLOW_LIMIT);
-  pcnt2.init(PCNT_UNIT_2, INPUT_PIN_2, PCNT_H_LIM_VAL_3, PCNT_FILTER_VAL,
+  pcnt2.init(PCNT_UNIT_2, INPUT_PIN_2, PCNT_H_LIM_VAL_1, PCNT_FILTER_VAL_1,
              TASK_DELAY, OVERFLOW_LIMIT);
-  pcnt3.init(PCNT_UNIT_3, INPUT_PIN_3, PCNT_H_LIM_VAL_4, PCNT_FILTER_VAL,
+  pcnt3.init(PCNT_UNIT_3, INPUT_PIN_3, PCNT_H_LIM_VAL_2, PCNT_FILTER_VAL_2,
              TASK_DELAY, OVERFLOW_LIMIT);
 }
 

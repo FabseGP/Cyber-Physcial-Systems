@@ -56,17 +56,18 @@ TrafficLights::TrafficLights() { ++object_count; }
 void TrafficLights::init(uint8_t id, String mode, String placement, String area,
                          uint8_t queue, uint8_t car_rate, gpio_num_t red_pin,
                          gpio_num_t yellow_pin, gpio_num_t green_pin) {
-  traffic_light_id = id;
-  state            = mode;
-  direction        = placement;
-  location         = area;
-  queue_size       = queue;
-  red_led          = red_pin;
-  yellow_led       = yellow_pin;
-  green_led        = green_pin;
-  rate             = car_rate;
-  timer            = RESET;
-  duration         = rate;
+  traffic_light_id        = id;
+  state                   = mode;
+  direction               = placement;
+  location                = area;
+  queue_size              = queue;
+  red_led                 = red_pin;
+  yellow_led              = yellow_pin;
+  green_led               = green_pin;
+  rate                    = car_rate;
+  timer                   = RESET;
+  timer_increment_counter = RESET;
+  duration                = rate;
 }
 
 uint8_t TrafficLights::get_id() { return traffic_light_id; }
@@ -80,14 +81,19 @@ uint8_t TrafficLights::get_count() { return object_count; }
 String  TrafficLights::get_state() { return state; }
 
 String  TrafficLights::get_url() {
-  return String("http://192.168.0.200:3000/trafficlights/insert") +
+  return String("/trafficlights/insert") +
          "?traffic_light_id=" + traffic_light_id +
          "&state=" + urlEncode(state) + "&direction=" + urlEncode(direction) +
          "&location=" + urlEncode(location) + "&queue_size=" + queue_size;
   ;
 }
 
-void TrafficLights::increment_timer(uint8_t addition) { timer += addition; }
+void TrafficLights::increment_timer(uint8_t addition) {
+  if (timer_increment_counter <= 5) {
+    timer += addition;
+  }
+  ++timer_increment_counter;
+}
 
 void TrafficLights::decrement_timer(uint8_t subtract) {
   if (timer <= subtract) {
@@ -116,7 +122,10 @@ void TrafficLights::decrement_queue() {
   }
 }
 
-void TrafficLights::set_timer(uint8_t seconds) { timer = seconds; }
+void TrafficLights::set_timer(uint8_t seconds) {
+  timer                   = seconds;
+  timer_increment_counter = RESET;
+}
 
 void TrafficLights::set_red() {
   digitalWrite(red_led, HIGH);

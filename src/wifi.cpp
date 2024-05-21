@@ -68,15 +68,16 @@ void api_task(void *pvParameters) {
    *   Function : See module specification (.h-file)
    *****************************************************************************/
 
-  HTTPClient http;
+  uint8_t      traffic_light_id, send = FALSE;
+  const String server = "http://192.168.207.208:3000";
+
+  HTTPClient   http;
 
   while (1) {
     if (WiFi.status() == WL_CONNECTED) {
-      uint8_t traffic_light_id, send = FALSE;
-
       if (xSemaphoreTake(xCarSemaphore, (TickType_t)10) == pdTRUE) {
-        if (xQueueReceive(xCarQueue, &traffic_light_id,
-                          (TickType_t)TICKS_WAIT) == pdPASS) {
+        while (xQueueReceive(xCarQueue, &traffic_light_id,
+                             (TickType_t)TICKS_WAIT) == pdPASS) {
 
           if (traffic_light_id == 1) {
             if (second == 1) {
@@ -89,8 +90,6 @@ void api_task(void *pvParameters) {
           }
 
           if (send == TRUE) {
-
-            const String server = "http://192.168.171.208:3000";
 
             const String car_url =
                 server + "/vehicles/insert" + "?car_id=" + car_counter +
@@ -108,20 +107,20 @@ void api_task(void *pvParameters) {
       }
 
       if (xSemaphoreTake(xTrafficLightSemaphore, (TickType_t)10) == pdTRUE) {
-        if (xQueueReceive(xTrafficLightQueue, &traffic_light_id,
-                          (TickType_t)TICKS_WAIT) == pdPASS) {
+        while (xQueueReceive(xTrafficLightQueue, &traffic_light_id,
+                             (TickType_t)TICKS_WAIT) == pdPASS) {
 
-          const String traffic_light0_url = traffic_light0.get_url();
+          const String traffic_light0_url = server + traffic_light0.get_url();
 
           http.begin(traffic_light0_url);
           http.POST("");
 
-          const String traffic_light1_url = traffic_light1.get_url();
+          const String traffic_light1_url = server + traffic_light1.get_url();
 
           http.begin(traffic_light1_url);
           http.POST("");
 
-          const String traffic_light2_url = traffic_light2.get_url();
+          const String traffic_light2_url = server + traffic_light2.get_url();
 
           http.begin(traffic_light2_url);
           http.POST("");

@@ -35,9 +35,10 @@
 class TrafficLights {
   private:
     static uint8_t object_count;
-    uint8_t        traffic_light_id, queue_size, timer, rate, duration;
-    String         state, direction, location;
-    gpio_num_t     red_led, yellow_led, green_led;
+    uint8_t        traffic_light_id, queue_size, timer, rate, duration,
+        timer_increment_counter;
+    String     state, direction, location;
+    gpio_num_t red_led, yellow_led, green_led;
 
   public:
     TrafficLights();

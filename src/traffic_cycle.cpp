@@ -37,7 +37,7 @@
 #define WE_GO_TIME    18
 #define WE_WAIT_TIME  3
 
-#define QUEUE_LIMIT   5
+#define QUEUE_LIMIT   4
 #define MINIMUM_QUEUE 1
 
 #define RESET         0
@@ -53,18 +53,21 @@
 
 /*****************************   Functions   *******************************/
 
-void update_queue(String &we_state, String &ns_state) {
+void traffic_timer_decrement() {
+  traffic_light0.decrement_timer(ONE_SECOND);
+  traffic_light2.decrement_timer(ONE_SECOND);
+}
 
-  if (we_state == "Green" || we_state == "Yellow") {
+void update_queue(String &we_state, String &ns_state) {
+  if (we_state == "Green") {
     traffic_light0.decrement_queue();
     traffic_light1.decrement_queue();
-  } else if (ns_state == "Green" || ns_state == "Yellow") {
+  } else if (ns_state == "Green") {
     traffic_light2.decrement_queue();
   }
 }
 
 void update_timer(String &we_state, String &ns_state) {
-
   uint8_t we_queue_size_1 = traffic_light0.get_queue_size(),
           we_queue_size_2 = traffic_light1.get_queue_size(),
           ns_queue_size   = traffic_light2.get_queue_size();
@@ -83,13 +86,13 @@ void update_timer(String &we_state, String &ns_state) {
   }
 
   if ((we_queue_size_1 >= MINIMUM_QUEUE || we_queue_size_2 >= MINIMUM_QUEUE) &&
-      (we_state != "Green" || we_state != "RedYellow") &&
-      ns_queue_size == EMPTY) {
+      we_state != "Green" && ns_queue_size == EMPTY &&
+      (ns_state == "Green" || ns_state == "RedYellow")) {
     traffic_light0.set_timer(RESET);
     traffic_light2.set_timer(RESET);
-  } else if (ns_queue_size >= MINIMUM_QUEUE &&
-             (ns_state != "Green" || ns_state != "RedYellow") &&
-             (we_queue_size_1 == EMPTY && we_queue_size_2 == EMPTY)) {
+  } else if (ns_queue_size >= MINIMUM_QUEUE && ns_state != "Green" &&
+             (we_queue_size_1 == EMPTY && we_queue_size_2 == EMPTY) &&
+             (we_state == "Green" || we_state == "RedYellow")) {
     traffic_light0.set_timer(RESET);
     traffic_light2.set_timer(RESET);
   }
@@ -98,8 +101,9 @@ void update_timer(String &we_state, String &ns_state) {
 void traffic_algorithm() {
   if (timer_change == SECOND_PASSED) {
 
-    traffic_light0.decrement_timer(ONE_SECOND);
-    traffic_light2.decrement_timer(ONE_SECOND);
+    timer_change = RESET;
+
+    traffic_timer_decrement();
 
     String we_state = traffic_light0.get_state(),
            ns_state = traffic_light2.get_state();
@@ -111,8 +115,6 @@ void traffic_algorithm() {
 
     xQueueSend(xTrafficLightQueue, &traffic_light0_id, (TickType_t)TICKS_WAIT);
     xSemaphoreGive(xTrafficLightSemaphore);
-
-    timer_change = RESET;
   }
 }
 
@@ -126,7 +128,6 @@ void traffic_cycle(void *pvParameters) {
     traffic_algorithm();
 
     static uint8_t traffic_state = TL_IDLE;
-
     uint8_t        timer         = traffic_light0.get_timer();
 
     if (timer == RESET) {
