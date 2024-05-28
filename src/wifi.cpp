@@ -87,10 +87,12 @@ void api_task(void *pvParameters) {
           }
 
           if (send == TRUE) {
-            const String car_url =
-                server + "/vehicles/insert" + "?car_id=" + car_counter +
-                "&velocity=" + velocity + "&date_id=" + 1 +
-                "&car_type_id=" + 2 + "&traffic_light_id=" + traffic_light_id;
+            // server-adressen lagres som en String for at sikre, at String
+            // forbliver den største type i additionen
+            const String car_url = server + "/vehicles/insert" +
+                                   "?car_id=" + car_counter +
+                                   "&velocity=" + velocity + "&date_id=" + 1 +
+                                   "&traffic_light_id=" + traffic_light_id;
 
             http.begin(car_url);
             http.POST("");

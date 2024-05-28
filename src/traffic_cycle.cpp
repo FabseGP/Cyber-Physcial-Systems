@@ -53,6 +53,32 @@
 
 /*****************************   Functions   *******************************/
 
+void print_state(uint8_t state) {
+  Serial.print("State: ");
+  if (state == 1) {
+    Serial.print("NS_READY");
+
+  } else if (state == 2) {
+    Serial.print("NS_GO   ");
+
+  } else if (state == 3) {
+    Serial.print("NS_WAIT ");
+
+  } else if (state == 4) {
+    Serial.print("WE_READY");
+
+  } else if (state == 5) {
+    Serial.print("WE_GO   ");
+
+  } else if (state == 6) {
+    Serial.print("WE_WAIT ");
+  }
+  Serial.print("                            ");
+  Serial.print("Timer: ");
+  Serial.print(traffic_light0.get_timer());
+  Serial.println("s");
+}
+
 void traffic_timer_decrement() {
   traffic_light0.decrement_timer(ONE_SECOND);
   traffic_light2.decrement_timer(ONE_SECOND);
@@ -68,6 +94,9 @@ void update_queue(String &we_state, String &ns_state) {
 }
 
 void update_timer(String &we_state, String &ns_state) {
+  // funktionen kaldes med statene for begge vejkryds-retninger
+
+  // hvert trafiklys kø hentes
   uint8_t we_queue_size_1 = traffic_light0.get_queue_size(),
           we_queue_size_2 = traffic_light1.get_queue_size(),
           ns_queue_size   = traffic_light2.get_queue_size();
@@ -75,23 +104,29 @@ void update_timer(String &we_state, String &ns_state) {
   if (((we_queue_size_1 > QUEUE_LIMIT || we_queue_size_2 > QUEUE_LIMIT) &&
        we_state == "Green") ||
       (ns_queue_size > QUEUE_LIMIT && ns_state == "Green")) {
+    // hvis trafiklysets kø er større end QUEUE_LIMIT & staten er grønt
     traffic_light0.increment_timer(ONE_SECOND);
     traffic_light2.increment_timer(ONE_SECOND);
   } else if (((we_queue_size_1 > QUEUE_LIMIT ||
                we_queue_size_2 > QUEUE_LIMIT) &&
               we_state == "Red") ||
              (ns_queue_size > QUEUE_LIMIT && ns_state == "Red")) {
+    // hvis trafiklysets kø er større end QUEUE_LIMIT & staten er rødt
     traffic_light0.decrement_timer(ONE_SECOND);
     traffic_light2.decrement_timer(ONE_SECOND);
   }
 
   if ((we_queue_size_1 >= MINIMUM_QUEUE || we_queue_size_2 >= MINIMUM_QUEUE) &&
       we_state != "Green" && ns_queue_size == EMPTY && ns_state == "Green") {
+    // hvis WE-trafiklysenes kø er større end MINIMUM_QUEUE & dens state er ikke
+    // grønt & NS-trafiklysets state er grønt
     traffic_light0.set_timer(RESET);
     traffic_light2.set_timer(RESET);
   } else if (ns_queue_size >= MINIMUM_QUEUE && ns_state != "Green" &&
              (we_queue_size_1 == EMPTY && we_queue_size_2 == EMPTY) &&
              we_state == "Green") {
+    // hvis NS-trafiklysenes kø er større end MINIMUM_QUEUE & dens state er ikke
+    // grønt & WE-trafiklysets state er grønt
     traffic_light0.set_timer(RESET);
     traffic_light2.set_timer(RESET);
   }
@@ -140,67 +175,74 @@ void traffic_cycle(void *pvParameters) {
           traffic_light0.set_timer(IDLE_TIME);
           traffic_light1.set_timer(IDLE_TIME);
           traffic_light2.set_timer(IDLE_TIME);
-          traffic_state = WE_READY;
-          break;
-
-        case WE_READY:
-          traffic_light0.set_red_yellow();
-          traffic_light1.set_red_yellow();
-          traffic_light2.set_red();
-          traffic_light0.set_timer(WE_READY_TIME);
-          traffic_light1.set_timer(WE_READY_TIME);
-          traffic_light2.set_timer(WE_READY_TIME);
-          traffic_state = WE_GO;
-          break;
-
-        case WE_GO:
-          traffic_light0.set_green();
-          traffic_light1.set_green();
-          traffic_light2.set_red();
-          traffic_light0.set_timer(WE_GO_TIME);
-          traffic_light1.set_timer(WE_GO_TIME);
-          traffic_light2.set_timer(WE_GO_TIME);
-          traffic_state = WE_WAIT;
-          break;
-
-        case WE_WAIT:
-          traffic_light0.set_yellow();
-          traffic_light1.set_yellow();
-          traffic_light2.set_red();
-          traffic_light0.set_timer(WE_WAIT_TIME);
-          traffic_light1.set_timer(WE_WAIT_TIME);
-          traffic_light2.set_timer(WE_WAIT_TIME);
+          print_state(traffic_state);
           traffic_state = NS_READY;
           break;
 
         case NS_READY:
-          traffic_light0.set_red();
-          traffic_light1.set_red();
-          traffic_light2.set_red_yellow();
+          traffic_light0.set_red_yellow();
+          traffic_light1.set_red_yellow();
+          traffic_light2.set_red();
           traffic_light0.set_timer(NS_READY_TIME);
           traffic_light1.set_timer(NS_READY_TIME);
           traffic_light2.set_timer(NS_READY_TIME);
+          print_state(traffic_state);
           traffic_state = NS_GO;
           break;
 
         case NS_GO:
-          traffic_light0.set_red();
-          traffic_light1.set_red();
-          traffic_light2.set_green();
+          traffic_light0.set_green();
+          traffic_light1.set_green();
+          traffic_light2.set_red();
           traffic_light0.set_timer(NS_GO_TIME);
           traffic_light1.set_timer(NS_GO_TIME);
           traffic_light2.set_timer(NS_GO_TIME);
+          print_state(traffic_state);
           traffic_state = NS_WAIT;
           break;
 
         case NS_WAIT:
-          traffic_light0.set_red();
-          traffic_light1.set_red();
-          traffic_light2.set_yellow();
+          traffic_light0.set_yellow();
+          traffic_light1.set_yellow();
+          traffic_light2.set_red();
           traffic_light0.set_timer(NS_WAIT_TIME);
           traffic_light1.set_timer(NS_WAIT_TIME);
           traffic_light2.set_timer(NS_WAIT_TIME);
+          print_state(traffic_state);
           traffic_state = WE_READY;
+          break;
+
+        case WE_READY:
+          traffic_light0.set_red();
+          traffic_light1.set_red();
+          traffic_light2.set_red_yellow();
+          traffic_light0.set_timer(WE_READY_TIME);
+          traffic_light1.set_timer(WE_READY_TIME);
+          traffic_light2.set_timer(WE_READY_TIME);
+          print_state(traffic_state);
+          traffic_state = WE_GO;
+          break;
+
+        case WE_GO:
+          traffic_light0.set_red();
+          traffic_light1.set_red();
+          traffic_light2.set_green();
+          traffic_light0.set_timer(WE_GO_TIME);
+          traffic_light1.set_timer(WE_GO_TIME);
+          traffic_light2.set_timer(WE_GO_TIME);
+          print_state(traffic_state);
+          traffic_state = WE_WAIT;
+          break;
+
+        case WE_WAIT:
+          traffic_light0.set_red();
+          traffic_light1.set_red();
+          traffic_light2.set_yellow();
+          traffic_light0.set_timer(WE_WAIT_TIME);
+          traffic_light1.set_timer(WE_WAIT_TIME);
+          traffic_light2.set_timer(WE_WAIT_TIME);
+          print_state(traffic_state);
+          traffic_state = NS_READY;
           break;
 
         default:

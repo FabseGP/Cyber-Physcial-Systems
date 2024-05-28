@@ -58,7 +58,7 @@ void setup() {
   setup_timer0();
   setup_pcnt();
   setup_traffic_lights();
-  connect_wifi("fabsewifi", "fabseman");
+  connect_wifi("wifi_ssid", "wifi_password");
 
   xCarQueue              = xQueueCreate(QUEUE_SIZE, sizeof(uint8_t));
   xCarSemaphore          = xSemaphoreCreateBinary();
@@ -72,8 +72,7 @@ void setup() {
   xTaskCreate(pcnt3_task, "pcnt3_task", LARGE_STACK, &pcnt3, HIGH_PRIO, NULL);
   xTaskCreate(api_task, "api_task", LARGE_STACK, NULL, MED_PRIO, NULL);
 
-  // if not LOW_PRIO, the PCNT-counters doesn't work + no
-  // api-transfer
+  // if not LOW_PRIO, the PCNT-counters doesn't work + no api-transfer
   xTaskCreate(traffic_cycle, "cycle_task", LARGE_STACK, NULL, LOW_PRIO, NULL);
 
   xSemaphoreGive(xCarSemaphore);

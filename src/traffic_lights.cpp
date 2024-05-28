@@ -157,15 +157,15 @@ void setup_traffic_lights() {
    *   Function : See module specification (.h-file)
    *****************************************************************************/
 
-  traffic_light0.init(TRAFFIC_LIGHT_E, "Red", "East",
-                      "Faaborgvej 23, 5610 Assens", EMPTY_QUEUE,
-                      SECONDS_PER_CAR, RED_WE, YELLOW_WE, GREEN_WE);
-  traffic_light1.init(TRAFFIC_LIGHT_W, "Red", "West",
-                      "Faaborgvej 24, 5610 Assens", EMPTY_QUEUE,
-                      SECONDS_PER_CAR, RED_WE, YELLOW_WE, GREEN_WE);
-  traffic_light2.init(TRAFFIC_LIGHT_N, "Red", "North",
-                      "Faaborgvej 25, 5610 Assens", EMPTY_QUEUE,
-                      SECONDS_PER_CAR, RED_NS, YELLOW_NS, GREEN_NS);
+  traffic_light0.init(TRAFFIC_LIGHT_E, "Red", "East", "Faaborgvej, 5610 Assens",
+                      EMPTY_QUEUE, SECONDS_PER_CAR, RED_WE, YELLOW_WE,
+                      GREEN_WE);
+  traffic_light1.init(TRAFFIC_LIGHT_W, "Red", "West", "Faaborgvej, 5610 Assens",
+                      EMPTY_QUEUE, SECONDS_PER_CAR, RED_WE, YELLOW_WE,
+                      GREEN_WE);
+  traffic_light2.init(TRAFFIC_LIGHT_N, "Red", "North", "Damgade, 5610 Assens",
+                      EMPTY_QUEUE, SECONDS_PER_CAR, RED_NS, YELLOW_NS,
+                      GREEN_NS);
 }
 
 /****************************** End Of Module *******************************/
