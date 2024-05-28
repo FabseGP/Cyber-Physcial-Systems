@@ -35,7 +35,7 @@
 #define INPUT_PIN_3         21
 
 #define PCNT_H_LIM_VAL_1    458
-#define PCNT_H_LIM_VAL_2    158
+#define PCNT_H_LIM_VAL_2    152
 #define PCNT_FILTER_VAL_1   370
 #define PCNT_FILTER_VAL_2   970
 
@@ -176,7 +176,6 @@ void PCNTModule::pcnt_task() {
           default:
             break;
         }
-
         xQueueSend(xCarQueue, &traffic_light_id, (TickType_t)TICKS_WAIT);
         xSemaphoreGive(xCarSemaphore);
       }

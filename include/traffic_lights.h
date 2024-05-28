@@ -42,28 +42,31 @@ class TrafficLights {
 
   public:
     TrafficLights();
-    void           init(uint8_t id, String mode, String placement, String area,
-                        uint8_t queue, uint8_t car_rate, gpio_num_t red_pin,
-                        gpio_num_t yellow_pin, gpio_num_t green_pin);
+    // initialisering af trafiklys med initial state og kø-størrelse
+    void init(uint8_t id, String mode, String placement, String area,
+              uint8_t queue, uint8_t car_rate, gpio_num_t red_pin,
+              gpio_num_t yellow_pin, gpio_num_t green_pin);
 
+    // læsning af et trafiklys state, kø-størrrelse, timer, id og url
     static uint8_t get_count();
     uint8_t        get_id();
     uint8_t        get_timer();
     uint8_t        get_queue_size();
-
     String         get_state();
     String         get_url();
 
-    void           increment_timer(uint8_t subtract);
-    void           decrement_timer(uint8_t subtract);
-    void           increment_queue();
-    void           decrement_queue();
+    // skrivning til et trafiklys timer og state
+    void set_timer(uint8_t seconds);
+    void set_red();
+    void set_yellow();
+    void set_green();
+    void set_red_yellow();
 
-    void           set_timer(uint8_t seconds);
-    void           set_red();
-    void           set_yellow();
-    void           set_green();
-    void           set_red_yellow();
+    // ændring af et trafiklys timer og kø-størrelse
+    void increment_timer(uint8_t subtract);
+    void decrement_timer(uint8_t subtract);
+    void increment_queue();
+    void decrement_queue();
 };
 
 /*****************************   Functions   *******************************/
