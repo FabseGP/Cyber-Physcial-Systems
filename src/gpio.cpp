@@ -35,15 +35,15 @@ void setup_gpio() {
 
   // LEDS
 
-  // NS, green -> yellow -> red
-  pinMode(GPIO_NUM_1, OUTPUT);
-  pinMode(GPIO_NUM_2, OUTPUT);
-  pinMode(GPIO_NUM_3, OUTPUT);
+  // NS
+  pinMode(GPIO_NUM_1, OUTPUT); // green
+  pinMode(GPIO_NUM_2, OUTPUT); // yellow
+  pinMode(GPIO_NUM_3, OUTPUT); // red
 
-  // WE, green -> yellow -> red
-  pinMode(GPIO_NUM_4, OUTPUT);
-  pinMode(GPIO_NUM_5, OUTPUT);
-  pinMode(GPIO_NUM_6, OUTPUT);
+  // WE
+  pinMode(GPIO_NUM_4, OUTPUT); // green
+  pinMode(GPIO_NUM_5, OUTPUT); // yellow
+  pinMode(GPIO_NUM_6, OUTPUT); // red
 
   // Sensors
   pinMode(GPIO_NUM_7, INPUT);  // SEN1

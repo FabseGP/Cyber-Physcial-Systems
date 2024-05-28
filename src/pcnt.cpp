@@ -139,12 +139,15 @@ void PCNTModule::pcnt_task() {
       vTaskDelay(delay_timer / portTICK_PERIOD_MS);
 
       // if the frequency is higher than the targeted high_limit
-      // an overflow occurs; if the amount of overflows is higehr
+      // an overflow occurs; if the amount of overflows is higher
       // than the sat limit, a car has arrived
       if (overflow_counter > overflow_limit) {
         state = CAR;
         uint8_t traffic_light_id;
 
+        // for every car registered, the specific traffic light id is put into
+        // the queue as a signal for the api-task to know that a car is
+        // registered
         switch (pcnt_unit) {
           case PCNT_UNIT_0: // SEN1
             traffic_light_id = traffic_light0.get_id();
