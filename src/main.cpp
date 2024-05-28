@@ -52,20 +52,23 @@ uint16_t car_counter = RESET;
 /*****************************   Functions   *******************************/
 
 void setup() {
-  Serial.begin(BAUDRATE);
+  Serial.begin(BAUDRATE); // setup baudrate for serial-communication
 
+  // initializes peripherals and objects
   setup_gpio();
   setup_timer0();
   setup_pcnt();
   setup_traffic_lights();
   connect_wifi("wifi_ssid", "wifi_password");
 
+  // initializes queues & semaphores
   xCarQueue              = xQueueCreate(QUEUE_SIZE, sizeof(uint8_t));
-  xCarSemaphore          = xSemaphoreCreateBinary();
-
   xTrafficLightQueue     = xQueueCreate(QUEUE_SIZE, sizeof(uint8_t));
+
+  xCarSemaphore          = xSemaphoreCreateBinary();
   xTrafficLightSemaphore = xSemaphoreCreateBinary();
 
+  // initializes tasks
   xTaskCreate(pcnt0_task, "pcnt0_task", LARGE_STACK, &pcnt0, HIGH_PRIO, NULL);
   xTaskCreate(pcnt1_task, "pcnt1_task", LARGE_STACK, &pcnt1, HIGH_PRIO, NULL);
   xTaskCreate(pcnt2_task, "pcnt2_task", LARGE_STACK, &pcnt2, HIGH_PRIO, NULL);
@@ -75,6 +78,7 @@ void setup() {
   // if not LOW_PRIO, the PCNT-counters doesn't work + no api-transfer
   xTaskCreate(traffic_cycle, "cycle_task", LARGE_STACK, NULL, LOW_PRIO, NULL);
 
+  // gives semaphores back
   xSemaphoreGive(xCarSemaphore);
   xSemaphoreGive(xTrafficLightSemaphore);
 }

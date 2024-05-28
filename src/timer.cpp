@@ -65,7 +65,7 @@ void setup_timer0() {
   // Attach onTime-interrupt to timer0
   timerAttachInterrupt(timer, &timer_interrupt, true);
 
-  // Fire Interrupt every 1M ticks, so 1s
+  // Fire interrupt every 1M ticks, so 1s timer
   timerAlarmWrite(timer, ALARM_1_SECOND, true);
 
   // Enable timer interrupt
